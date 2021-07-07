@@ -302,16 +302,16 @@
         },
         {
             "name": "beganovich/snappdf",
-            "version": "v1.6.0",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beganovich/snappdf.git",
-                "reference": "5c0a7e2e2c33441c0dd9d1fcbfc8de71c3cc920c"
+                "reference": "4ae1315e793385b385699bdd0328106c39644a91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beganovich/snappdf/zipball/5c0a7e2e2c33441c0dd9d1fcbfc8de71c3cc920c",
-                "reference": "5c0a7e2e2c33441c0dd9d1fcbfc8de71c3cc920c",
+                "url": "https://api.github.com/repos/beganovich/snappdf/zipball/4ae1315e793385b385699bdd0328106c39644a91",
+                "reference": "4ae1315e793385b385699bdd0328106c39644a91",
                 "shasum": ""
             },
             "require": {
@@ -349,9 +349,9 @@
             "description": "Convert webpages or HTML into the PDF file using Chromium or Google Chrome.",
             "support": {
                 "issues": "https://github.com/beganovich/snappdf/issues",
-                "source": "https://github.com/beganovich/snappdf/tree/v1.6.0"
+                "source": "https://github.com/beganovich/snappdf/tree/v1.7.0"
             },
-            "time": "2021-03-19T21:20:07+00:00"
+            "time": "2021-06-26T23:28:52+00:00"
         },
         {
             "name": "braintree/braintree_php",
@@ -14681,5 +14681,5 @@
     "platform-dev": {
         "php": "^7.3|^7.4|^8.0"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
