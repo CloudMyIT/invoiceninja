@@ -30,3 +30,8 @@ nbproject
 public/test.pdf
 public/storage/test.pdf
 /Modules
+
+#Serverless Files to Ignore
+.vapor/
+.env.production
+.env.staging
