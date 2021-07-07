@@ -10,12 +10,7 @@
  */
 namespace Tests\Unit;
 
-use App\Models\Account;
-use App\Models\Client;
-use App\Models\Company;
 use App\Models\Credit;
-use App\Models\CreditInvitation;
-use App\Models\User;
 use Tests\MockUnitData;
 use Tests\TestCase;
 
@@ -30,7 +25,7 @@ class CreditBalanceTest extends TestCase
     {
         parent::setUp();
         
-        Credit::all()->each(function ($credit){
+        Credit::all()->each(function ($credit) {
             $credit->forceDelete();
         });
 
@@ -39,7 +34,6 @@ class CreditBalanceTest extends TestCase
 
     public function testCreditBalance()
     {
-
         $credit = Credit::factory()->create([
             'user_id' => $this->user->id,
             'company_id' => $this->company->id,
@@ -55,7 +49,6 @@ class CreditBalanceTest extends TestCase
 
     public function testExpiredCreditBalance()
     {
-
         $credit = Credit::factory()->create([
             'user_id' => $this->user->id,
             'company_id' => $this->company->id,
@@ -67,6 +60,5 @@ class CreditBalanceTest extends TestCase
         ]);
 
         $this->assertEquals($this->client->service()->getCreditBalance(), 0);
-        
     }
 }

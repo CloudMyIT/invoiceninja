@@ -15,6 +15,6 @@
 
 </main>
 
-<script defer src=" {{ mix('/js/client_show.min.js') }}"></script>
+<script defer src=" {{ asset('/js/client_show.min.js') }}"></script>
 
 @endsection

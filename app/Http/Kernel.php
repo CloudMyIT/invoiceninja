@@ -95,12 +95,12 @@ class Kernel extends HttpKernel
         'api' => [
             'throttle:300,1',
             'bindings',
-            'query_logging',
+            // 'query_logging',
         ],
         'contact' => [
             'throttle:60,1',
             'bindings',
-            'query_logging',
+            // 'query_logging',
         ],
         'client' => [
             EncryptCookies::class,
@@ -110,12 +110,12 @@ class Kernel extends HttpKernel
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
             SubstituteBindings::class,
-            QueryLogging::class,
+            // QueryLogging::class,
         ],
         'shop' => [
             'throttle:120,1',
             'bindings',
-            'query_logging',
+            // 'query_logging',
         ],
     ];
 

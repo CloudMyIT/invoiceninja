@@ -19,9 +19,7 @@ class ContactRegister
      */
     public function handle($request, Closure $next)
     {
-
-        if (strpos($request->getHost(), 'invoicing.co') !== false) 
-        {
+        if (strpos($request->getHost(), 'invoicing.co') !== false) {
             $subdomain = explode('.', $request->getHost())[0];
             
             $query = [
@@ -31,28 +29,26 @@ class ContactRegister
 
             $company = Company::where($query)->first();
 
-            if($company)
-            {
-                if(! $company->client_can_register)
+            if ($company) {
+                if (! $company->client_can_register) {
                     abort(400, 'Registration disabled');
+                }
 
                 $request->merge(['key' => $company->company_key]);
 
                 return $next($request);
             }
-
         }
 
-       $query = [
+        $query = [
             'portal_domain' => $request->getSchemeAndHttpHost(),
             'portal_mode' => 'domain',
         ];
 
-        if($company = Company::where($query)->first())
-        {
-
-            if(! $company->client_can_register)
+        if ($company = Company::where($query)->first()) {
+            if (! $company->client_can_register) {
                 abort(400, 'Registration disabled');
+            }
 
             $request->merge(['key' => $company->company_key]);
 
@@ -65,8 +61,8 @@ class ContactRegister
         if ($request->route()->parameter('company_key') && Ninja::isSelfHost()) {
             $company = Company::where('company_key', $request->company_key)->firstOrFail();
 
-            if(! (bool)$company->client_can_register);
-                abort(400, 'Registration disabled');
+            if (! (bool)$company->client_can_register);
+            abort(400, 'Registration disabled');
 
             $request->merge(['key' => $company->company_key]);
 
@@ -78,8 +74,9 @@ class ContactRegister
         if (!$request->route()->parameter('company_key') && Ninja::isSelfHost()) {
             $company = Account::first()->default_company;
 
-            if(! $company->client_can_register)
+            if (! $company->client_can_register) {
                 abort(400, 'Registration disabled');
+            }
 
             $request->merge(['key' => $company->company_key]);
 

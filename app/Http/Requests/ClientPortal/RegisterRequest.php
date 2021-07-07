@@ -46,8 +46,9 @@ class RegisterRequest extends FormRequest
     {
 
         //this should be all we need, the rest SHOULD be redundant because of our Middleware
-        if ($this->key)
+        if ($this->key) {
             return Company::where('company_key', $this->key)->first();
+        }
 
         if ($this->company_key) {
             return Company::where('company_key', $this->company_key)->firstOrFail();
@@ -56,14 +57,14 @@ class RegisterRequest extends FormRequest
         if (!$this->route()->parameter('company_key') && Ninja::isSelfHost()) {
             $company = Account::first()->default_company;
 
-            if(!$company->client_can_register)
+            if (!$company->client_can_register) {
                 abort(403, "This page is restricted");
+            }
 
             return $company;
         }
 
         if (Ninja::isHosted()) {
-
             $subdomain = explode('.', $this->getHost())[0];
 
             $query = [
@@ -71,17 +72,18 @@ class RegisterRequest extends FormRequest
                 'portal_mode' => 'subdomain',
             ];
 
-            if($company = MultiDB::findAndSetDbByDomain($query))
+            if ($company = MultiDB::findAndSetDbByDomain($query)) {
                 return $company;
+            }
 
             $query = [
                 'portal_domain' => $this->getSchemeAndHttpHost(),
                 'portal_mode' => 'domain',
             ];
 
-            if($company = MultiDB::findAndSetDbByDomain($query))
+            if ($company = MultiDB::findAndSetDbByDomain($query)) {
                 return $company;
-
+            }
         }
 
         abort(400, 'Register request not found.');

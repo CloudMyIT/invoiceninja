@@ -13,8 +13,8 @@ namespace App\Mail\Admin;
 
 use App\Utils\Ninja;
 use App\Utils\Number;
-use stdClass;
 use Illuminate\Support\Facades\App;
+use stdClass;
 
 class EntitySentObject
 {
@@ -48,7 +48,6 @@ class EntitySentObject
 
     public function build()
     {
-
         App::forgetInstance('translator');
         /* Init a new copy of the translator*/
         $t = app('translator');
@@ -130,13 +129,13 @@ class EntitySentObject
     private function getMessage()
     {
         return ctrans(
-                $this->template_body,
-                [
+            $this->template_body,
+            [
                     'amount' => $this->getAmount(),
                     'client' => $this->contact->present()->name(),
                     'invoice' => $this->entity->number,
                 ]
-            );
+        );
     }
 
     private function getData()

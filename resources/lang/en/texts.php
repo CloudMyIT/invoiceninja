@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Organization',
     'name' => 'Name',
     'website' => 'Website',
@@ -4273,8 +4273,6 @@ $LANG = array(
     'already_default_payment_method' => 'This is your preferred way of paying.',
     'auto_bill_disabled' => 'Auto Bill Disabled',
     'select_payment_method' => 'Select a payment method:',
-);
+];
 
 return $LANG;
-
-?>

@@ -163,7 +163,7 @@ class BaseDriver extends AbstractPaymentDriver
 
     /**
      * Detaches a payment method from the gateway
-     * 
+     *
      * @param  ClientGatewayToken $token The gateway token
      * @return bool                      boolean response
      */
@@ -243,13 +243,15 @@ class BaseDriver extends AbstractPaymentDriver
 
         $this->attachInvoices($payment, $this->payment_hash);
 
-        if($this->payment_hash->credits_total() > 0)
+        if ($this->payment_hash->credits_total() > 0) {
             $payment = $payment->service()->applyCredits($this->payment_hash)->save();
+        }
 
         $payment->service()->updateInvoicePayment($this->payment_hash);
 
-        if ($this->client->getSetting('client_online_payment_notification'))
+        if ($this->client->getSetting('client_online_payment_notification')) {
             $payment->service()->sendEmail();
+        }
 
         event(new PaymentWasCreated($payment, $payment->company, Ninja::eventVars()));
 
@@ -360,17 +362,15 @@ class BaseDriver extends AbstractPaymentDriver
 
     public function processInternallyFailedPayment($gateway, $e)
     {
-
         $this->unWindGatewayFees($this->payment_hash);
 
         if ($e instanceof CheckoutHttpException) {
             $error = $e->getBody();
-        }
-        else if ($e instanceof Exception) {
+        } elseif ($e instanceof Exception) {
+            $error = $e->getMessage();
+        } else {
             $error = $e->getMessage();
         }
-        else
-            $error = $e->getMessage();
 
         PaymentFailureMailer::dispatch(
             $gateway->client,
@@ -380,27 +380,21 @@ class BaseDriver extends AbstractPaymentDriver
         );
 
         $nmo = new NinjaMailerObject;
-        $nmo->mailable = new NinjaMailer( (new ClientPaymentFailureObject($gateway->client, $error, $gateway->client->company, $this->payment_hash))->build() );
+        $nmo->mailable = new NinjaMailer((new ClientPaymentFailureObject($gateway->client, $error, $gateway->client->company, $this->payment_hash))->build());
         $nmo->company = $gateway->client->company;
         $nmo->settings = $gateway->client->company->settings;
 
         $invoices = Invoice::whereIn('id', $this->transformKeys(array_column($this->payment_hash->invoices(), 'invoice_id')))->get();
 
-        $invoices->each(function ($invoice){
-
+        $invoices->each(function ($invoice) {
             $invoice->service()->deletePdf();
-
         });
 
-        $invoices->first()->invitations->each(function ($invitation) use ($nmo){
-
+        $invoices->first()->invitations->each(function ($invitation) use ($nmo) {
             if ($invitation->contact->send_email && $invitation->contact->email) {
-
                 $nmo->to_user = $invitation->contact;
                 NinjaMailerJob::dispatch($nmo);
-
             }
-
         });
 
 
@@ -537,7 +531,6 @@ class BaseDriver extends AbstractPaymentDriver
 
     public function logSuccessfulGatewayResponse($response, $gateway_const)
     {
-
         SystemLogger::dispatch(
             $response,
             SystemLog::CATEGORY_GATEWAY_RESPONSE,
@@ -555,11 +548,11 @@ class BaseDriver extends AbstractPaymentDriver
 
         // if($type == GatewayType::BANK_TRANSFER && $this->company_gateway->fees_and_limits->{GatewayType::BANK_TRANSFER}->is_enabled)
         // {
-        //     $types[] = $type;    
+        //     $types[] = $type;
         // }
         // elseif($type == GatewayType::CREDIT_CARD && $this->company_gateway->fees_and_limits->{GatewayType::CREDIT_CARD}->is_enabled)
         // {
-        //     $types[] = $type;    
+        //     $types[] = $type;
         // }
 
         $types[] = GatewayType::CREDIT_CARD;

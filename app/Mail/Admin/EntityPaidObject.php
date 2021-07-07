@@ -37,7 +37,6 @@ class EntityPaidObject
 
     public function build()
     {
-
         App::forgetInstance('translator');
         /* Init a new copy of the translator*/
         $t = app('translator');

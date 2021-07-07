@@ -177,6 +177,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\VaporUiServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         App\Providers\MultiDBProvider::class,
         App\Providers\ClientPortalServiceProvider::class,

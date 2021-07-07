@@ -23,7 +23,7 @@
 
     </main>
 
-    <script defer src=" {{ mix('/js/client_list.min.js') }}"></script>
+    <script defer src=" {{ asset('/js/client_list.min.js') }}"></script>
 
 @endsection
 

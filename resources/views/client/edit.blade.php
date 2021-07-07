@@ -68,6 +68,6 @@
 
 </main>
 
-<script src=" {{ mix('/js/client_edit.min.js') }}"></script>
+<script src=" {{ asset('/js/client_edit.min.js') }}"></script>
 
 @endsection

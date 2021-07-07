@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\App;
 
 class VerifyUserObject
 {
-
     use MakesHash;
 
     public $user;
@@ -30,12 +29,11 @@ class VerifyUserObject
     public function __construct($user, $company)
     {
         $this->user = $user;
-    	$this->company = $company;
+        $this->company = $company;
     }
 
     public function build()
     {
-
         App::forgetInstance('translator');
         /* Init a new copy of the translator*/
         $t = app('translator');
@@ -44,8 +42,8 @@ class VerifyUserObject
         /* Set customized translations _NOW_ */
         $t->replace(Ninja::transformTranslations($this->company->settings));
 
-    	$this->user->confirmation_code = $this->createDbHash($this->company->db);
-    	$this->user->save();
+        $this->user->confirmation_code = $this->createDbHash($this->company->db);
+        $this->user->save();
 
         $data = [
             'title' => ctrans('texts.confirmation_subject'),
@@ -54,7 +52,7 @@ class VerifyUserObject
             'button' => ctrans('texts.button_confirmation_message'),
             'settings' => $this->company->settings,
             'logo' => $this->company->present()->logo(),
-			'signature' => $this->company->settings->email_signature,
+            'signature' => $this->company->settings->email_signature,
         ];
 
 

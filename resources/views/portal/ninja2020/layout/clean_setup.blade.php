@@ -48,9 +48,9 @@
 
         <!-- Scripts -->
         @if(strpos(Request::url(),'setup') === false)
-        <script src="{{ mix('js/app.js') }}" defer></script>
+        <script src="{{ asset('js/app.js') }}" defer></script>
         @else
-        <script src="{{ str_replace("setup", "", Request::url())}}js/app.js" defer></script>
+        <script src="{{ asset('js/app.js') }}" defer></script>
         @endif
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.x/dist/alpine.min.js" defer></script>
 
@@ -60,11 +60,11 @@
 
         <!-- Styles -->
         @if(strpos(Request::url(),'setup') === false)
-            <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+            <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         @else
             <link href="{{ str_replace("setup", "", Request::url())}}css/app.css" rel="stylesheet">
         @endif
-        {{-- <link href="{{ mix('favicon.png') }}" rel="shortcut icon" type="image/png"> --}}
+        {{-- <link href="{{ asset('favicon.png') }}" rel="shortcut icon" type="image/png"> --}}
 
         <link rel="canonical" href="{{ config('ninja.app_url') }}/{{ request()->path() }}"/>
 

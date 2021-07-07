@@ -121,22 +121,20 @@ class StartMigration implements ShouldQueue
 
             $this->company->update_products = $update_product_flag;
             $this->company->save();
-
         } catch (NonExistingMigrationFile | ProcessingMigrationArchiveFailed | ResourceNotAvailableForMigration | MigrationValidatorFailed | ResourceDependencyMissing | \Exception $e) {
-
             $this->company->update_products = $update_product_flag;
             $this->company->save();
 
 
-            if(Ninja::isHosted())
+            if (Ninja::isHosted()) {
                 app('sentry')->captureException($e);
+            }
             
             Mail::to($this->user->email, $this->user->name())->send(new MigrationFailed($e, $this->company, $e->getMessage()));
 
             if (app()->environment() !== 'production') {
                 info($e->getMessage());
             }
-            
         }
 
         //always make sure we unset the migration as running

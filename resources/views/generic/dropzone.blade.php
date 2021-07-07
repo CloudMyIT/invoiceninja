@@ -27,8 +27,8 @@
     </form>
 </div>
 @push('scripts')
-    <script src="/vendors/js/dropzone.min.js"></script>
-    <script src="/vendors/js/sweetalert.min.js"></script>
+    <script src="{{ asset('/vendors/js/dropzone.min.js') }}"></script>
+    <script src="{{ asset('/vendors/js/sweetalert.min.js') }}"></script>
     <script>
 
         var contact = {!! auth()->user() !!};

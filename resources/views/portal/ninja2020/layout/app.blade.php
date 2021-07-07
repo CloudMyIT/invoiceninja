@@ -48,7 +48,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <!-- Scripts -->
-        <script src="{{ mix('js/app.js') }}" defer></script>
+        <script src="{{ asset('js/app.js') }}" defer></script>
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.x/dist/alpine.min.js" defer></script>
 
         <!-- Fonts -->
@@ -56,7 +56,7 @@
         <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet" type="text/css">
 
         <!-- Styles -->
-        <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
         @if(!auth('contact')->user()->user->account->isPaid())
             <link href="{{ asset('favicon.png') }}" rel="shortcut icon" type="image/png">

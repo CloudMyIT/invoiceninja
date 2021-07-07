@@ -30,3 +30,7 @@ nbproject
 public/test.pdf
 public/storage/test.pdf
 /Modules
+.vapor/
+.env.production
+.env.staging
+.env.dev

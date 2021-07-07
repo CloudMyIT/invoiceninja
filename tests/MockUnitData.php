@@ -16,6 +16,7 @@ use App\Models\Client;
 use App\Models\ClientContact;
 use App\Models\Company;
 use App\Models\User;
+
 /**
  * Class MockUnitData.
  */
@@ -35,13 +36,12 @@ trait MockUnitData
 
     public function makeTestData()
     {
-
         $this->faker = \Faker\Factory::create();
 
         $this->account = Account::factory()->create();
 
         $this->user = User::factory()->create([
-            'account_id' => $this->account->id, 
+            'account_id' => $this->account->id,
             'email' => $this->faker->safeEmail
         ]);
 
@@ -50,7 +50,7 @@ trait MockUnitData
         ]);
 
         $this->client = Client::factory()->create([
-            'user_id' => $this->user->id, 
+            'user_id' => $this->user->id,
             'company_id' => $this->company->id
         ]);
             
@@ -66,6 +66,5 @@ trait MockUnitData
             'client_id' => $this->client->id,
             'company_id' => $this->company->id,
         ]);
-
     }
 }
