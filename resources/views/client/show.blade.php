@@ -15,6 +15,10 @@
 
 </main>
 
+@if (app()->environment('local'))
 <script defer src=" {{ mix('/js/client_show.min.js') }}"></script>
+@else
+<script defer src=" {{ asset('/js/client_show.min.js') }}"></script>
+@endif
 
 @endsection

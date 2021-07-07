@@ -15,5 +15,8 @@
 
 <script>
 </script>
-
+@if (app()->environment('local'))
 <script defer src=" {{ mix('/js/localization.min.js') }}"></script>
+@else
+<script defer src=" {{ asset('/js/localization.min.js') }}"></script>
+@endif
