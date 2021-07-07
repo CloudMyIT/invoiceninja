@@ -149,7 +149,7 @@
   @if(config('ninja.flutter_renderer') == 'hosted')
     <script defer src="main.dart.js?v={{ config('ninja.app_version') }}" type="application/javascript"></script>
   @else
-    <script defer src="main.foss.dart.js?v={{ config('ninja.app_version') }}" type="application/javascript"></script>
+    <script defer src="{{ asset('main.foss.dart.js') }}?v={{ config('ninja.app_version') }}" type="application/javascript"></script>
   @endif
 
   <center style="padding-top: 150px" id="loader">
