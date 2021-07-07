@@ -39,7 +39,7 @@ class GetInvoicePdf extends AbstractService
 
         $file_path = $path.$this->invoice->numberFormatter().'.pdf';
 
-        $disk = 'public';
+        $disk = config('filesystems.default');
 
         $file = Storage::disk($disk)->exists($file_path);
 

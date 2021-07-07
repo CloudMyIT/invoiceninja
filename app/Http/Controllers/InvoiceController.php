@@ -672,8 +672,18 @@ class InvoiceController extends BaseController
                 break;
             case 'download':
 
-               $file = $invoice->pdf_file_path();
-               return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+                $file = $invoice->pdf_file_path();
+               
+                $headers = array_merge(
+                    [
+                        'Cache-Control:' => 'no-cache',
+                        'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                    ],
+                    json_decode(config('ninja.pdf_additional_headers'))
+                );
+                $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+                Storage::disk(config('filesystems.default'))->delete($file);
+                return $response;
 
                 break;
             case 'restore':
@@ -795,7 +805,16 @@ class InvoiceController extends BaseController
 
         $file = $invoice->service()->getInvoicePdf($contact);
 
-            return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'))
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file);
+        return $response;
 
     }
 
@@ -847,8 +866,16 @@ class InvoiceController extends BaseController
     {
         
         $file = $invoice->service()->getInvoiceDeliveryNote($invoice, $invoice->invitations->first()->contact);
-        
-        return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'))
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file);
+        return $response;
 
     }
 

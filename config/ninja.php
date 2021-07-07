@@ -163,5 +163,6 @@ return [
     'ninja_default_company_gateway_id' => env('NINJA_COMPANY_GATEWAY_ID', null),
     'ninja_hosted_secret' => env('NINJA_HOSTED_SECRET', null),
     'pdf_generator' => env('PDF_GENERATOR', false),
+    'pdf_additional_headers' => env('PDF_ADDITIONAL_HEADERS', '{}'),
     'internal_queue_enabled' => env('INTERNAL_QUEUE_ENABLED', true),
 ];

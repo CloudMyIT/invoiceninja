@@ -142,8 +142,10 @@ class SetupController extends Controller
         }
 
         try {
-            foreach ($env_values as $property => $value) {
-                $this->updateEnvironmentProperty($property, $value);
+            if (!config('preconfigured_install')) {
+                foreach ($env_values as $property => $value) {
+                    $this->updateEnvironmentProperty($property, $value);
+                }
             }
 
             /* We need this in some environments that do not have STDIN defined */
@@ -160,7 +162,7 @@ class SetupController extends Controller
             Artisan::call('migrate', ['--force' => true]);
             Artisan::call('db:seed', ['--force' => true]);
             
-            Storage::disk('local')->delete('test.pdf');
+            Storage::disk(config('filesystems.default'))->delete('test.pdf');
 
             /* Create the first account. */
             if (Account::count() == 0) {
@@ -246,9 +248,8 @@ class SetupController extends Controller
                 ->generate();
 
             Storage::disk(config('filesystems.default'))->put('test.pdf', $pdf);
-            Storage::disk('local')->put('test.pdf', $pdf);
 
-            return response(['url' => Storage::disk('local')->url('test.pdf')], 200);
+            return response(['url' => Storage::disk(config('filesystems.default'))->url('test.pdf')], 200);
         } catch (Exception $e) {
             nlog($e->getMessage());
 
@@ -266,9 +267,8 @@ class SetupController extends Controller
             $pdf = CurlUtils::get($phantom_url);
 
             Storage::disk(config('filesystems.default'))->put('test.pdf', $pdf);
-            Storage::disk('local')->put('test.pdf', $pdf);
 
-            return response(['url' => Storage::disk('local')->url('test.pdf')], 200);
+            return response(['url' => Storage::disk(config('filesystems.default'))->url('test.pdf')], 200);
         } catch (Exception $e) {
             return response([], 500);
         }

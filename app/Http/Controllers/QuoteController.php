@@ -39,6 +39,7 @@ use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class QuoteController.
@@ -676,8 +677,18 @@ class QuoteController extends BaseController
                 break;
             case 'download':
 
-               $file = $quote->pdf_file_path();
-               return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+                $file = $quote->pdf_file_path();
+
+                $headers = array_merge(
+                    [
+                        'Cache-Control:' => 'no-cache',
+                        'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                    ],
+                    json_decode(config('ninja.pdf_additional_headers'))
+                );
+                $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+                Storage::disk(config('filesystems.default'))->delete($file);
+                return $response;
 
                 break;
             case 'restore':
@@ -730,7 +741,17 @@ class QuoteController extends BaseController
 
         $file_path = $quote->service()->getQuotePdf($contact);
 
-        return response()->download($file_path, basename($file_path), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file_path).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'))
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file_path);
+        return $response;
+
     }
 
     /**

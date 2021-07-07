@@ -411,19 +411,12 @@ class Invoice extends BaseModel
 
         $file_path = $this->client->invoice_filepath($invitation).$this->numberFormatter().'.pdf';
 
-        if(Ninja::isHosted() && $portal && Storage::disk(config('filesystems.default'))->exists($file_path)){
+        if (Storage::disk(config('filesystems.default'))->exists($file_path)) {
             return Storage::disk(config('filesystems.default'))->{$type}($file_path);
-        }
-        elseif(Ninja::isHosted()){
+        } else {
             $file_path = CreateEntityPdf::dispatchNow($invitation, config('filesystems.default'));
             return Storage::disk(config('filesystems.default'))->{$type}($file_path);
         }
-        
-        if(Storage::disk('public')->exists($file_path))
-            return Storage::disk('public')->{$type}($file_path);
-
-        $file_path = CreateEntityPdf::dispatchNow($invitation);
-            return Storage::disk('public')->{$type}($file_path);
     }
 
     public function markInvitationsSent()

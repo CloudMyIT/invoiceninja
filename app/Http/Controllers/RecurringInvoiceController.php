@@ -33,6 +33,7 @@ use App\Utils\Traits\SavesDocuments;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class RecurringInvoiceController.
@@ -502,7 +503,16 @@ class RecurringInvoiceController extends BaseController
 
         $file_path = $recurring_invoice->service()->getInvoicePdf($contact);
 
-        return response()->download($file_path, basename($file_path), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file_path).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'))
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file_path);
+        return $response;
     }
 
     /**

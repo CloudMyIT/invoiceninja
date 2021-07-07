@@ -49,9 +49,7 @@ class GenerateDeliveryNote
 
         $this->contact = $contact;
 
-        $this->disk = 'public';
-
-        // $this->disk = $disk ?? config('filesystems.default');
+        $this->disk = $disk ?? config('filesystems.default');
     }
 
     public function run()
