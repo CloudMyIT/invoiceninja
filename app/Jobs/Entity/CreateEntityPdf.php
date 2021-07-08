@@ -199,11 +199,9 @@ class CreateEntityPdf implements ShouldQueue
                 
                 if(!Storage::disk($this->disk)->exists($path))
                     Storage::disk($this->disk)->makeDirectory($path, 0775);
+                
+                    Storage::disk($this->disk)->put($file_path, $pdf);
 
-                nlog($file_path);
-                
-                Storage::disk($this->disk)->put($file_path, $pdf);
-                
             }
             catch(\Exception $e)
             {

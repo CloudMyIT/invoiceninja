@@ -536,8 +536,8 @@ class CreditController extends BaseController
                     return $this->itemResponse($credit);
                 }
                 break;
-            case 'download':    
-                $file = $credit->pdf_file_path();
+            case 'download':
+                $file = $credit->service()->getCreditPdf($credit->invitations->first());
                 $headers = array_merge(
                     [
                         'Cache-Control:' => 'no-cache',
@@ -548,6 +548,7 @@ class CreditController extends BaseController
                 $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
                 Storage::disk(config('filesystems.default'))->delete($file);
                 return $response;
+
               break;
             case 'archive':
                 $this->credit_repository->archive($credit);
@@ -607,7 +608,6 @@ class CreditController extends BaseController
         $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
         Storage::disk(config('filesystems.default'))->delete($file_path);
         return $response;
-        
     }
 
     /**

@@ -28,6 +28,7 @@ use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
+use Illuminate\Support\Facades\Storage;
 
 class QuoteController extends Controller
 {
@@ -90,7 +91,7 @@ class QuoteController extends Controller
 
         if ($quotes->count() == 1) {
 
-            $file = $quotes->first()->pdf_file_path();
+            $file = $quotes->first()->service()->getQuotePdf();
             $headers = array_merge(
                 [
                     'Cache-Control:' => 'no-cache',

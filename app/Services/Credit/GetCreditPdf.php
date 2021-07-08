@@ -41,10 +41,8 @@ class GetCreditPdf extends AbstractService
 
         $file_path = $path.$this->credit->numberFormatter().'.pdf';
 
-        $disk = config('filesystems.default');
-
         $file_path = CreateEntityPdf::dispatchNow($this->invitation);
 
-        return Storage::disk($disk)->path($file_path);
+        return $file_path;
     }
 }

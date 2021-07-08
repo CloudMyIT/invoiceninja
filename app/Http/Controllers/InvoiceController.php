@@ -732,10 +732,11 @@ class InvoiceController extends BaseController
                 }
 
                 //touch reminder1,2,3_sent + last_sent here if the email is a reminder.
-                $invoice->service()->touchReminder($this->reminder_template)->deletePdf()->save();
+                //$invoice->service()->touchReminder($this->reminder_template)->deletePdf()->save();
+                $invoice->service()->touchReminder($this->reminder_template)->markSent()->save();
 
                 $invoice->invitations->load('contact.client.country', 'invoice.client.country', 'invoice.company')->each(function ($invitation) use ($invoice) {
-                    EmailEntity::dispatch($invitation, $invoice->company, $this->reminder_template);
+                    EmailEntity::dispatch($invitation, $invoice->company, $this->reminder_template)->delay(now()->addSeconds(30));
                 });
 
                 if ($invoice->invitations->count() >= 1) {
@@ -866,6 +867,7 @@ class InvoiceController extends BaseController
     {
         
         $file = $invoice->service()->getInvoiceDeliveryNote($invoice, $invoice->invitations->first()->contact);
+
         $headers = array_merge(
             [
                 'Cache-Control:' => 'no-cache',

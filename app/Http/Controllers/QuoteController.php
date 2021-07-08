@@ -677,7 +677,7 @@ class QuoteController extends BaseController
                 break;
             case 'download':
 
-                $file = $quote->pdf_file_path();
+                $file = $quote->service()->getQuotePdf();
 
                 $headers = array_merge(
                     [
@@ -739,7 +739,7 @@ class QuoteController extends BaseController
         $contact = $invitation->contact;
         $quote = $invitation->quote;
 
-        $file_path = $quote->service()->getQuotePdf($contact);
+        $file = $quote->service()->getQuotePdf($contact);
 
         $headers = array_merge(
             [

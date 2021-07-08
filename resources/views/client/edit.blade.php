@@ -68,6 +68,10 @@
 
 </main>
 
-<script src=" {{ mix('/js/client_edit.min.js') }}"></script>
+@if (app()->environment('local'))
+<script defer src=" {{ mix('/js/client_edit.min.js') }}"></script>
+@else
+<script defer src=" {{ asset('/js/client_edit.min.js') }}"></script>
+@endif
 
 @endsection

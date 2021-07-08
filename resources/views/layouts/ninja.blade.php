@@ -48,15 +48,23 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <!-- Scripts -->
-        <script src="{{ mix('js/app.js') }}" defer></script>
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.x/dist/alpine.min.js" defer></script>
+        @if (app()->environment('local'))
+            <script src="{{ mix('js/app.js') }}" defer></script>
+
+            <!-- Styles -->
+            <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+        @else
+            <script src="{{ asset('js/app.js') }}" defer></script>
+
+            <!-- Styles -->
+            <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+        @endif
 
         <!-- Fonts -->
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet" type="text/css">
-
-        <!-- Styles -->
-        <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+        
         <link rel="canonical" href="{{ config('ninja.site_url') }}/{{ request()->path() }}"/>
 
 
