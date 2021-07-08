@@ -97,7 +97,7 @@ class QuoteController extends Controller
                     'Cache-Control:' => 'no-cache',
                     'Content-Disposition' => 'inline; filename="'.basename($file).'"'
                 ],
-                json_decode(config('ninja.pdf_additional_headers'))
+                json_decode(config('ninja.pdf_additional_headers'), true)
             );
             $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
             Storage::disk(config('filesystems.default'))->delete($file);
