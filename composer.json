@@ -129,7 +129,8 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan vendor:publish --force --tag=livewire:assets --ansi"
         ],
         "format": [
             "vendor/bin/php-cs-fixer fix"

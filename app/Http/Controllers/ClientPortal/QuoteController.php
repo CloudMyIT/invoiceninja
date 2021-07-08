@@ -23,6 +23,7 @@ use App\Utils\Ninja;
 use App\Utils\TempFile;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ZipStream\Option\Archive;
@@ -90,11 +91,17 @@ class QuoteController extends Controller
 
         if ($quotes->count() == 1) {
 
-           $file = $quotes->first()->service()->getQuotePdf();
-           // return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
-           return response()->streamDownload(function () use($file) {
-                    echo Storage::get($file);
-            },  basename($file));
+            $file = $quotes->first()->service()->getQuotePdf();
+            $headers = array_merge(
+                [
+                    'Cache-Control:' => 'no-cache',
+                    'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                ],
+                json_decode(config('ninja.pdf_additional_headers'))
+            );
+            $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+            Storage::disk(config('filesystems.default'))->delete($file);
+            return $response;
         }
 
         // enable output of HTTP headers

@@ -87,7 +87,7 @@ class ZipInvoices implements ShouldQueue
             $inv = $invoice->invitations->first();
 
             # download file
-            $download_file = file_get_contents($invoice->pdf_file_path($inv, 'url', true));
+            $download_file = Storage::disk(config('filesystems.default'))->get($invoice->pdf_file_path($inv));
 
             #add it to the zip
             $zip->addFromString(basename($invoice->pdf_file_path($inv)), $download_file);
@@ -96,7 +96,7 @@ class ZipInvoices implements ShouldQueue
         # close zip
         $zip->close();
         
-        Storage::put($path.$file_name, file_get_contents($tmp_file));
+        Storage::disk(config('filesystems.default'))->put($path.$file_name, file_get_contents($tmp_file));
 
         $nmo = new NinjaMailerObject;
         $nmo->mailable = new DownloadInvoices(Storage::url($path.$file_name), $this->company);

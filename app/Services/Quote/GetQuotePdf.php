@@ -39,9 +39,8 @@ class GetQuotePdf extends AbstractService
 
         $file_path = $path.$this->quote->numberFormatter().'.pdf';
 
-        // $disk = 'public';
         $disk = config('filesystems.default');
-        
+
         $file_path = CreateEntityPdf::dispatchNow($invitation);
         
         return $file_path;

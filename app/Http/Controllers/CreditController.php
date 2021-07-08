@@ -536,15 +536,19 @@ class CreditController extends BaseController
                     return $this->itemResponse($credit);
                 }
                 break;
-            case 'download':    
-                // $file = $credit->pdf_file_path();
+            case 'download':
                 $file = $credit->service()->getCreditPdf($credit->invitations->first());
+                $headers = array_merge(
+                    [
+                        'Cache-Control:' => 'no-cache',
+                        'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                    ],
+                    json_decode(config('ninja.pdf_additional_headers'))
+                );
+                $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+                Storage::disk(config('filesystems.default'))->delete($file);
+                return $response;
 
-                // return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
-
-                return response()->streamDownload(function () use($file) {
-                        echo Storage::get($file);
-                },  basename($file));
               break;
             case 'archive':
                 $this->credit_repository->archive($credit);
@@ -592,12 +596,18 @@ class CreditController extends BaseController
         // $contact = $invitation->contact;
         $credit = $invitation->credit;
 
-        $file = $credit->service()->getCreditPdf($invitation);
-        
-        return response()->streamDownload(function () use($file) {
-                echo Storage::get($file);
-        },  basename($file));
-        // return response()->download($file_path, basename($file_path), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+        $file_path = $credit->service()->getCreditPdf($invitation);
+
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file_path).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'))
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file_path);
+        return $response;
     }
 
     /**
