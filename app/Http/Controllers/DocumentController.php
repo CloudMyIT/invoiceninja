@@ -13,6 +13,7 @@ use App\Transformers\DocumentTransformer;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends BaseController
 {
@@ -114,9 +115,10 @@ class DocumentController extends BaseController
 
     public function download(ShowDocumentRequest $request, Document $document)
     {
-        return response()->streamDownload(function () use ($document) {
-            echo file_get_contents($document->generateUrl());
-        }, basename($document->generateUrl()));
+        return Storage::download($document->generateUrl(), basename($document->generateUrl()));
+        // return response()->streamDownload(function () use ($document) {
+        //     echo file_get_contents($document->generateUrl());
+        // }, basename($document->generateUrl()));
     }
 
     /**

@@ -41,7 +41,7 @@ class GetInvoicePdf extends AbstractService
 
         $file_path = $path.$this->entity->hashed_id.'.pdf';
 
-        $disk = 'public';
+        $disk = config('filesystems.default');
 
         $file = Storage::disk($disk)->exists($file_path);
 
