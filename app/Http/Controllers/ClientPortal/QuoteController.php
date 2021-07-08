@@ -28,7 +28,6 @@ use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
-use Illuminate\Support\Facades\Storage;
 
 class QuoteController extends Controller
 {
