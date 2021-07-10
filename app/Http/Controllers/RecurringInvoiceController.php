@@ -501,7 +501,7 @@ class RecurringInvoiceController extends BaseController
         $contact = $invitation->contact;
         $recurring_invoice = $invitation->recurring_invoice;
 
-        $file_path = $recurring_invoice->service()->getInvoicePdf($contact);
+        $file = $recurring_invoice->service()->getInvoicePdf($contact);
 
         $headers = array_merge(
             [
@@ -511,7 +511,7 @@ class RecurringInvoiceController extends BaseController
             json_decode(config('ninja.pdf_additional_headers'), true)
         );
         $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
-        Storage::disk(config('filesystems.default'))->delete($file_path);
+        //Storage::disk(config('filesystems.default'))->delete($file_path);
         return $response;
     }
 

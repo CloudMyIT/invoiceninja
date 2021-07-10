@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
+use Illuminate\Support\Facades\Storage;
 
 class InvoiceController extends Controller
 {
@@ -169,6 +170,7 @@ class InvoiceController extends Controller
         if ($invoices->count() == 1) {
             $invoice = $invoices->first();
             $invitation = $invoice->invitations->first();
+
             //$file = $invoice->pdf_file_path($invitation);
             $file = $invoice->service()->getInvoicePdf(auth()->user());
             
@@ -180,9 +182,8 @@ class InvoiceController extends Controller
                 json_decode(config('ninja.pdf_additional_headers'), true)
             );
             $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
-            Storage::disk(config('filesystems.default'))->delete($file);
+            //Storage::disk(config('filesystems.default'))->delete($file);
             return $response;
-
         }
 
         // enable output of HTTP headers
