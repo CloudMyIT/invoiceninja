@@ -11,7 +11,6 @@
 
 namespace App\Models;
 
-use App\Models\GatewayType;
 use App\PaymentDrivers\BasePaymentDriver;
 use App\Utils\Number;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -90,7 +89,6 @@ class CompanyGateway extends BaseModel
 
     public function system_logs()
     {
-
         return $this->company
                     ->system_log_relation
                     ->where('type_id', $this->gateway_consts[$this->gateway->key])
@@ -292,25 +290,20 @@ class CompanyGateway extends BaseModel
         //     $label = ' - '.$fee.' '.ctrans('texts.fee');
         // }
 
-        if($fee > 0) {
-
+        if ($fee > 0) {
             $fees_and_limits = $this->fees_and_limits->{$gateway_type_id};
 
-            if(strlen($fees_and_limits->fee_percent) >=1)
+            if (strlen($fees_and_limits->fee_percent) >=1) {
                 $label .= $fees_and_limits->fee_percent . '%';
+            }
 
-            if(strlen($fees_and_limits->fee_amount) >=1){
-
-                if(strlen($label) > 1) {
-
+            if (strlen($fees_and_limits->fee_amount) >=1) {
+                if (strlen($label) > 1) {
                     $label .= ' + ' . Number::formatMoney($fees_and_limits->fee_amount, $client);
-
-                }else {
+                } else {
                     $label .= Number::formatMoney($fees_and_limits->fee_amount, $client);
                 }
             }
-
-
         }
 
 
@@ -347,7 +340,7 @@ class CompanyGateway extends BaseModel
         }
 
         $pre_tax_fee = $fee;
-            nlog("fee after adding fee percent = {$fee}");
+        nlog("fee after adding fee percent = {$fee}");
 
         /**/
         if ($include_taxes) {
@@ -366,7 +359,7 @@ class CompanyGateway extends BaseModel
                 // info("fee after adding fee tax 3 = {$fee}");
             }
         }
-            nlog("fee after adding fee percent = {$fee}");
+        nlog("fee after adding fee percent = {$fee}");
 
         return $fee;
     }

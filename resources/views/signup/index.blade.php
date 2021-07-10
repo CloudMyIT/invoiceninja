@@ -10,7 +10,7 @@
                 <div class="card mx-4">
                     <div class="card-body p-4">
                         <span class="align-items-center" style="width:100%; display: block; text-align: center; padding:30px;">
-                            <img src="images/logo.png" width="100px" height="100px">
+                            <img src="{{ asset('images/logo.png') }}" width="100px" height="100px">
                         </span>
                         <h1 style="text-align: center;">@lang('texts.login_create_an_account')</h1>
                         <p class="text-muted"></p>

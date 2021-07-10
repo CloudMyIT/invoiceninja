@@ -18,7 +18,6 @@ use App\Utils\SystemHealth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Artisan;
 
 trait AppSetup
 {
@@ -48,7 +47,7 @@ trait AppSetup
                     $orderBy = 'num_days';
                 } elseif ($name == 'fonts') {
                     $orderBy = 'sort_order';
-                } elseif (in_array($name, ['currencies', 'industries', 'languages', 'countries', 'banks'])) {
+                } elseif (in_array($name, ['currencies', 'industries', 'languages', 'countries', 'banks', 'timezones'])) {
                     $orderBy = 'name';
                 } else {
                     $orderBy = 'id';
@@ -62,7 +61,6 @@ trait AppSetup
 
         /*Build template cache*/
         $this->buildTemplates();
-        
     }
 
 

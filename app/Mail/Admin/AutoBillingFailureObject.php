@@ -14,7 +14,6 @@ namespace App\Mail\Admin;
 use App\Models\Invoice;
 use App\Utils\HtmlEngine;
 use App\Utils\Ninja;
-use App\Utils\Number;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Support\Facades\App;
 use stdClass;
@@ -52,12 +51,10 @@ class AutoBillingFailureObject
         $this->payment_hash = $payment_hash;
 
         $this->company = $company;
-
     }
 
     public function build()
     {
-
         App::forgetInstance('translator');
         /* Init a new copy of the translator*/
         $t = app('translator');
@@ -80,12 +77,11 @@ class AutoBillingFailureObject
 
     private function getAmount()
     {
-       return array_sum(array_column($this->payment_hash->invoices(), 'amount')) + $this->payment_hash->fee_total;
+        return array_sum(array_column($this->payment_hash->invoices(), 'amount')) + $this->payment_hash->fee_total;
     }
 
     private function getSubject()
     {
-
         return
             ctrans(
                 'texts.auto_bill_failed',

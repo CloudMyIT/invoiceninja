@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\App;
 
 class ClientContactResetPasswordObject
 {
-
     public $client_contact;
 
     public $token;
@@ -34,7 +33,6 @@ class ClientContactResetPasswordObject
 
     public function build()
     {
-
         App::forgetInstance('translator');
         $t = app('translator');
         App::setLocale($this->client_contact->preferredLocale());

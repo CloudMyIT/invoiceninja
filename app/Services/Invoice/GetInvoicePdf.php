@@ -15,7 +15,6 @@ use App\Jobs\Entity\CreateEntityPdf;
 use App\Models\ClientContact;
 use App\Models\Invoice;
 use App\Services\AbstractService;
-use App\Utils\TempFile;
 use Illuminate\Support\Facades\Storage;
 
 class GetInvoicePdf extends AbstractService
@@ -39,7 +38,6 @@ class GetInvoicePdf extends AbstractService
 
         $file_path = $path.$this->invoice->numberFormatter().'.pdf';
 
-        // $disk = 'public';
         $disk = config('filesystems.default');
 
         $file = Storage::disk($disk)->exists($file_path);
@@ -48,8 +46,6 @@ class GetInvoicePdf extends AbstractService
             $file_path = CreateEntityPdf::dispatchNow($invitation);
         }
 
-        // return Storage::disk($disk)->path($file_path);
-        // 
         return $file_path;
     }
 }

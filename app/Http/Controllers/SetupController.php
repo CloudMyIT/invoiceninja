@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers;
 
+use \Illuminate\Support\Facades\DB;
 use App\Http\Requests\Setup\CheckDatabaseRequest;
 use App\Http\Requests\Setup\CheckMailRequest;
 use App\Http\Requests\Setup\StoreSetupRequest;
@@ -29,12 +30,10 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use \Illuminate\Support\Facades\DB;
 
 /**
  * Class SetupController.
@@ -142,8 +141,10 @@ class SetupController extends Controller
         }
 
         try {
-            foreach ($env_values as $property => $value) {
-                $this->updateEnvironmentProperty($property, $value);
+            if (!config('preconfigured_install')) {
+                foreach ($env_values as $property => $value) {
+                    $this->updateEnvironmentProperty($property, $value);
+                }
             }
 
             /* We need this in some environments that do not have STDIN defined */
@@ -160,7 +161,7 @@ class SetupController extends Controller
             Artisan::call('migrate', ['--force' => true]);
             Artisan::call('db:seed', ['--force' => true]);
             
-            Storage::disk('local')->delete('test.pdf');
+            Storage::disk(config('filesystems.default'))->delete('test.pdf');
 
             /* Create the first account. */
             if (Account::count() == 0) {
@@ -251,9 +252,8 @@ class SetupController extends Controller
                 ->generate();
 
             Storage::disk(config('filesystems.default'))->put('test.pdf', $pdf);
-            Storage::disk('local')->put('test.pdf', $pdf);
 
-            return response(['url' => Storage::disk('local')->url('test.pdf')], 200);
+            return response(['url' => Storage::disk(config('filesystems.default'))->url('test.pdf')], 200);
         } catch (Exception $e) {
             nlog($e->getMessage());
 
@@ -271,9 +271,8 @@ class SetupController extends Controller
             $pdf = CurlUtils::get($phantom_url);
 
             Storage::disk(config('filesystems.default'))->put('test.pdf', $pdf);
-            Storage::disk('local')->put('test.pdf', $pdf);
 
-            return response(['url' => Storage::disk('local')->url('test.pdf')], 200);
+            return response(['url' => Storage::disk(config('filesystems.default'))->url('test.pdf')], 200);
         } catch (Exception $e) {
             return response([], 500);
         }
@@ -285,22 +284,23 @@ class SetupController extends Controller
         //     return redirect('/');
     
         // if( Ninja::isNinja() || !request()->has('secret') || (request()->input('secret') != config('ninja.update_secret')) )
-        if(!request()->has('secret') || (request()->input('secret') != config('ninja.update_secret')) )
+        if (!request()->has('secret') || (request()->input('secret') != config('ninja.update_secret'))) {
             return redirect('/');
+        }
 
         $cacheCompiled = base_path('bootstrap/cache/compiled.php');
         if (file_exists($cacheCompiled)) {
-            unlink ($cacheCompiled);
+            unlink($cacheCompiled);
         }
 
         $cacheServices = base_path('bootstrap/cache/services.php');
         if (file_exists($cacheServices)) {
-            unlink ($cacheServices);
+            unlink($cacheServices);
         }
 
         $cacheRoute = base_path('bootstrap/cache/routes-v7.php');
         if (file_exists($cacheRoute)) {
-            unlink ($cacheRoute);
+            unlink($cacheRoute);
         }
 
         Artisan::call('clear-compiled');
@@ -314,6 +314,5 @@ class SetupController extends Controller
         $this->buildCache(true);
 
         return redirect('/');
-
     }
 }

@@ -17,43 +17,39 @@ use Tests\TestCase;
  */
 class UrlTest extends TestCase
 {
-
-   	public function setUp() :void
+    public function setUp() :void
     {
         parent::setUp();
     }
 
     public function testNoScheme()
     {
-    	$url = 'google.com';
+        $url = 'google.com';
 
-    	$this->assertEquals("https://google.com", $this->addScheme($url));
+        $this->assertEquals("https://google.com", $this->addScheme($url));
     }
 
     public function testNoSchemeAndTrailingSlash()
     {
-    	$url = 'google.com/';
+        $url = 'google.com/';
 
-    	$this->assertEquals("https://google.com", $this->addScheme($url));
+        $this->assertEquals("https://google.com", $this->addScheme($url));
     }
 
 
     public function testNoSchemeAndTrailingSlashAndHttp()
     {
-    	$url = 'http://google.com/';
+        $url = 'http://google.com/';
 
-    	$this->assertEquals("https://google.com", $this->addScheme($url));
+        $this->assertEquals("https://google.com", $this->addScheme($url));
     }
 
-	private function addScheme($url, $scheme = 'https://')
-	{
+    private function addScheme($url, $scheme = 'https://')
+    {
+        $url = str_replace("http://", "", $url);
 
-	  $url = str_replace("http://", "", $url);
+        $url =  parse_url($url, PHP_URL_SCHEME) === null ? $scheme . $url : $url;
 
-	  $url =  parse_url($url, PHP_URL_SCHEME) === null ? $scheme . $url : $url;
-
-	  return rtrim($url, '/');
-
-	}
-
+        return rtrim($url, '/');
+    }
 }

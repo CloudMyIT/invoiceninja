@@ -42,3 +42,67 @@ Route::get('stripe/signup/{token}', 'StripeConnectController@initialize')->name(
 Route::get('stripe/completed', 'StripeConnectController@completed')->name('stripe_connect.return');
 
 Route::get('checkout/3ds_redirect/{company_key}/{company_gateway_id}/{hash}', 'Gateways\Checkout3dsController@index')->name('checkout.3ds_redirect');
+
+
+
+/**
+ * Vapor Asset Routes for Service Worker
+ */
+
+Route::prefix('assets')->group(function () {
+    Route::get('/{any}', function ($any) {
+        return response()->redirectTo(asset('assets/'.$any));
+    })->where('any', '.*');
+});
+
+Route::prefix('icons')->group(function () {
+    Route::get('/{any}', function ($any) {
+        return response()->redirectTo(asset('icons/'.$any));
+    })->where('any', '.*');
+});
+
+Route::prefix('images')->group(function () {
+    Route::get('/{any}', function ($any) {
+        return response()->redirectTo(asset('images/'.$any));
+    })->where('any', '.*');
+});
+
+
+Route::get('main.dart.js', function () {
+    return response()->redirectTo(asset('main.dart.js'));
+});
+
+Route::get('main.foss.dart.js', function () {
+    return response()->redirectTo(asset('main.foss.dart.js'));
+});
+
+// Laravel Doesn't Copy This file for some reason...
+Route::get('manifest.json', function () {
+    return response()->json(json_decode('{
+        "name": "Invoice Ninja",
+        "short_name": "Invoice Ninja",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#0175C2",
+        "theme_color": "#0175C2",
+        "description": "The leading open-source invoicing app",
+        "orientation": "portrait-primary",
+        "prefer_related_applications": true,
+        "related_applications": [
+            {
+                "platform": "play",
+                "id": "com.invoiceninja.app"
+            }, {
+                "platform": "itunes",
+                "url": "https://testflight.apple.com/join/MJ6WpaXh"
+            }
+        ],
+        "icons": [
+            {
+                "src": "images/logo.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ]
+    }'));
+});

@@ -34,7 +34,6 @@ use App\Repositories\QuoteRepository;
 use App\Transformers\InvoiceTransformer;
 use App\Transformers\QuoteTransformer;
 use App\Utils\Ninja;
-use App\Utils\TempFile;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
 use Illuminate\Http\Request;
@@ -677,14 +676,18 @@ class QuoteController extends BaseController
                 break;
             case 'download':
 
-                //$file = $quote->pdf_file_path();
                 $file = $quote->service()->getQuotePdf();
 
-                return response()->streamDownload(function () use($file) {
-                        echo Storage::get($file);
-                },  basename($file));
-
-               //return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+                $headers = array_merge(
+                    [
+                        'Cache-Control:' => 'no-cache',
+                        'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                    ],
+                    json_decode(config('ninja.pdf_additional_headers'), true)
+                );
+                $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+                Storage::disk(config('filesystems.default'))->delete($file);
+                return $response;
 
                 break;
             case 'restore':
@@ -724,7 +727,7 @@ class QuoteController extends BaseController
                 }
                 break;
             default:
-                return response()->json(['message' => ctrans('texts.action_unavailable',['action' => $action])], 400);
+                return response()->json(['message' => ctrans('texts.action_unavailable', ['action' => $action])], 400);
                 break;
         }
     }
@@ -736,13 +739,17 @@ class QuoteController extends BaseController
         $quote = $invitation->quote;
 
         $file = $quote->service()->getQuotePdf($contact);
-nlog($file);
 
-        return response()->streamDownload(function () use($file) {
-                echo Storage::get($file);
-        },  basename($file));
-
-        // return response()->download($file_path, basename($file_path), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'), true)
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file);
+        return $response;
     }
 
     /**
@@ -798,14 +805,14 @@ nlog($file);
      */
     public function upload(UploadQuoteRequest $request, Quote $quote)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
 
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $quote);
+        }
 
         return $this->itemResponse($quote->fresh());
-
-    }  
+    }
 }

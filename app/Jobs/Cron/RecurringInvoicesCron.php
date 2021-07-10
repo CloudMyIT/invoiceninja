@@ -49,8 +49,8 @@ class RecurringInvoicesCron
                                                         ->where('status_id', RecurringInvoice::STATUS_ACTIVE)
                                                         ->where('remaining_cycles', '!=', '0')
                                                         ->whereHas('client', function ($query) {
-                                                             $query->where('is_deleted',0)
-                                                                   ->where('deleted_at', NULL);
+                                                            $query->where('is_deleted', 0)
+                                                                   ->where('deleted_at', null);
                                                         })
                                                         ->with('company')
                                                         ->cursor();
@@ -75,8 +75,8 @@ class RecurringInvoicesCron
                                                         ->where('status_id', RecurringInvoice::STATUS_ACTIVE)
                                                         ->where('remaining_cycles', '!=', '0')
                                                         ->whereHas('client', function ($query) {
-                                                             $query->where('is_deleted',0)
-                                                                   ->where('deleted_at', NULL);
+                                                            $query->where('is_deleted', 0)
+                                                                   ->where('deleted_at', null);
                                                         })
                                                         ->with('company')
                                                         ->cursor();

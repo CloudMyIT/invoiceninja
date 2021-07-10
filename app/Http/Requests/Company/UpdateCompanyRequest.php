@@ -48,12 +48,11 @@ class UpdateCompanyRequest extends Request
         if (isset($input['portal_mode']) && ($input['portal_mode'] == 'domain' || $input['portal_mode'] == 'iframe')) {
             $rules['portal_domain'] = 'sometimes|url';
         } else {
-
-            if(Ninja::isHosted()){
+            if (Ninja::isHosted()) {
                 $rules['subdomain'] = ['nullable', 'regex:/^[a-zA-Z0-9.-]+[a-zA-Z0-9]$/', new ValidSubdomain($this->all())];
-            }
-            else
+            } else {
                 $rules['subdomain'] = 'nullable|alpha_num';
+            }
         }
 
         // if($this->company->account->isPaidHostedClient()) {
@@ -67,8 +66,9 @@ class UpdateCompanyRequest extends Request
     {
         $input = $this->all();
 
-        if(Ninja::isHosted() && array_key_exists('portal_domain', $input) && strlen($input['portal_domain']) > 1)
+        if (Ninja::isHosted() && array_key_exists('portal_domain', $input) && strlen($input['portal_domain']) > 1) {
             $input['portal_domain'] = $this->addScheme($input['portal_domain']);
+        }
 
         if (array_key_exists('settings', $input)) {
             $input['settings'] = $this->filterSaveableSettings($input['settings']);
@@ -108,12 +108,10 @@ class UpdateCompanyRequest extends Request
 
     private function addScheme($url, $scheme = 'https://')
     {
+        $url = str_replace("http://", "", $url);
 
-      $url = str_replace("http://", "", $url);
+        $url =  parse_url($url, PHP_URL_SCHEME) === null ? $scheme . $url : $url;
 
-      $url =  parse_url($url, PHP_URL_SCHEME) === null ? $scheme . $url : $url;
-
-      return rtrim($url, '/');
-
+        return rtrim($url, '/');
     }
 }

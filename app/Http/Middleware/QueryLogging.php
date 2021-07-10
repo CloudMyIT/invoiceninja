@@ -16,7 +16,6 @@ use App\Utils\Ninja;
 use Closure;
 use DB;
 use Illuminate\Http\Request;
-use Log;
 use Turbo124\Beacon\Facades\LightLogs;
 
 /**
@@ -46,24 +45,24 @@ class QueryLogging
 
         // hide requests made by debugbar
         if (strstr($request->url(), '_debugbar') === false) {
-
             $queries = DB::getQueryLog();
             $count = count($queries);
             $timeEnd = microtime(true);
             $time = $timeEnd - $timeStart;
         
-            if($count > 150)
+            if ($count > 150) {
                 nlog($queries);
+            }
             
             $ip = '';
             
-            if(request()->header('Cf-Connecting-Ip'))
+            if (request()->header('Cf-Connecting-Ip')) {
                 $ip = request()->header('Cf-Connecting-Ip');
-            else{
+            } else {
                 $ip = request()->ip();
             }
 
-           LightLogs::create(new DbQuery($request->method(), urldecode($request->url()), $count, $time, $ip))
+            LightLogs::create(new DbQuery($request->method(), urldecode($request->url()), $count, $time, $ip))
                  ->batch();
         }
         

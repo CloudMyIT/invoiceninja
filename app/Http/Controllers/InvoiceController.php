@@ -29,7 +29,6 @@ use App\Http\Requests\Invoice\UploadInvoiceRequest;
 use App\Jobs\Entity\EmailEntity;
 use App\Jobs\Invoice\StoreInvoice;
 use App\Jobs\Invoice\ZipInvoices;
-use App\Jobs\Util\UnlinkFile;
 use App\Models\Account;
 use App\Models\Client;
 use App\Models\Invoice;
@@ -38,12 +37,10 @@ use App\Repositories\InvoiceRepository;
 use App\Transformers\InvoiceTransformer;
 use App\Transformers\QuoteTransformer;
 use App\Utils\Ninja;
-use App\Utils\TempFile;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -208,7 +205,6 @@ class InvoiceController extends BaseController
      */
     public function store(StoreInvoiceRequest $request)
     {
-
         $client = Client::find($request->input('client_id'));
 
         $invoice = $this->invoice_repo->save($request->all(), InvoiceFactory::create(auth()->user()->company()->id, auth()->user()->id));
@@ -513,7 +509,6 @@ class InvoiceController extends BaseController
      */
     public function bulk()
     {
-        
         $action = request()->input('action');
 
         $ids = request()->input('ids');
@@ -672,17 +667,18 @@ class InvoiceController extends BaseController
                 break;
             case 'download':
 
-               // $file = $invoice->pdf_file_path();
-               // return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
-
-                $file = $invoice->service()->getInvoicePdf();
-
-               // return response()->download(Storage::get($file), basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
-
-                return response()->streamDownload(function () use($file) {
-                        echo Storage::get($file);
-                },  basename($file));
-
+                $file = $invoice->pdf_file_path();
+               
+                $headers = array_merge(
+                    [
+                        'Cache-Control:' => 'no-cache',
+                        'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                    ],
+                    json_decode(config('ninja.pdf_additional_headers'), true)
+                );
+                $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+                Storage::disk(config('filesystems.default'))->delete($file);
+                return $response;
 
                 break;
             case 'restore':
@@ -805,11 +801,16 @@ class InvoiceController extends BaseController
 
         $file = $invoice->service()->getInvoicePdf($contact);
 
-       // return response()->download(Storage::get($file), basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
-
-        return response()->streamDownload(function () use($file) {
-                echo Storage::get($file);
-        },  basename($file));
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'), true)
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file);
+        return $response;
     }
 
     /**
@@ -858,14 +859,18 @@ class InvoiceController extends BaseController
      */
     public function deliveryNote(ShowInvoiceRequest $request, Invoice $invoice)
     {
-        
         $file = $invoice->service()->getInvoiceDeliveryNote($invoice, $invoice->invitations->first()->contact);
-        
-        // return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
-        return response()->streamDownload(function () use($file) {
-                echo Storage::get($file);
-        },  basename($file));
 
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'), true)
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file);
+        return $response;
     }
 
     /**
@@ -921,13 +926,14 @@ class InvoiceController extends BaseController
      */
     public function upload(UploadInvoiceRequest $request, Invoice $invoice)
     {
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
         
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $invoice);
+        }
 
         return $this->itemResponse($invoice->fresh());
-
-    }    
+    }
 }

@@ -11,17 +11,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\NonExistingMigrationFile;
 use App\Http\Requests\Import\ImportJsonRequest;
-use App\Jobs\Company\CompanyExport;
 use App\Jobs\Company\CompanyImport;
 use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
-use ZipArchive;
-use Illuminate\Support\Facades\Storage;
 
 class ImportJsonController extends BaseController
 {
@@ -62,20 +56,18 @@ class ImportJsonController extends BaseController
      */
     public function import(ImportJsonRequest $request)
     {
-
         $file_location = $request->file('files')
             ->storeAs(
                 'migrations',
                 $request->file('files')->getClientOriginalName()
             );
 
-        if(Ninja::isHosted())
+        if (Ninja::isHosted()) {
             CompanyImport::dispatch(auth()->user()->getCompany(), auth()->user(), $file_location, $request->except('files'))->onQueue('migration');
-        else
+        } else {
             CompanyImport::dispatch(auth()->user()->getCompany(), auth()->user(), $file_location, $request->except('files'));
+        }
 
         return response()->json(['message' => 'Processing'], 200);
-
     }
-
 }

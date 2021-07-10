@@ -17,16 +17,12 @@ use App\Jobs\Util\UnlinkFile;
 use App\Mail\DownloadInvoices;
 use App\Models\Company;
 use App\Models\User;
-use App\Utils\TempFile;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use ZipStream\Option\Archive;
-use ZipStream\ZipStream;
 use ZipArchive;
 
 class ZipInvoices implements ShouldQueue
@@ -79,15 +75,14 @@ class ZipInvoices implements ShouldQueue
         $file_name = date('Y-m-d').'_'.str_replace(' ', '_', trans('texts.invoices')).'.zip';
         
         $tmp_file = @tempnam('.', '');
-        $zip->open($tmp_file , ZipArchive::OVERWRITE);
+        $zip->open($tmp_file, ZipArchive::OVERWRITE);
 
         # loop through each file
         foreach ($this->invoices as $invoice) {
-            
             $inv = $invoice->invitations->first();
 
             # download file
-            $download_file = file_get_contents($invoice->pdf_file_path($inv, 'url', true));
+            $download_file = Storage::disk(config('filesystems.default'))->get($invoice->pdf_file_path($inv));
 
             #add it to the zip
             $zip->addFromString(basename($invoice->pdf_file_path($inv)), $download_file);
@@ -96,7 +91,7 @@ class ZipInvoices implements ShouldQueue
         # close zip
         $zip->close();
         
-        Storage::put($path.$file_name, file_get_contents($tmp_file));
+        Storage::disk(config('filesystems.default'))->put($path.$file_name, file_get_contents($tmp_file));
 
         $nmo = new NinjaMailerObject;
         $nmo->mailable = new DownloadInvoices(Storage::url($path.$file_name), $this->company);

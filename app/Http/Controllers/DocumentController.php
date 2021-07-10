@@ -13,6 +13,7 @@ use App\Transformers\DocumentTransformer;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends BaseController
 {
@@ -114,9 +115,20 @@ class DocumentController extends BaseController
 
     public function download(ShowDocumentRequest $request, Document $document)
     {
-        return response()->streamDownload(function () use ($document) {
-            echo file_get_contents($document->generateUrl());
-        }, basename($document->generateUrl()));
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($document->diskPath()).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'), true)
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($document->diskPath()), 200, $headers);
+        //Storage::disk(config('filesystems.default'))->delete($file_path);
+        return $response;
+        //return Storage::download(, basename($document->generateUrl()));
+        // return response()->streamDownload(function () use ($document) {
+        //     echo file_get_contents($document->generateUrl());
+        // }, basename($document->generateUrl()));
     }
 
     /**

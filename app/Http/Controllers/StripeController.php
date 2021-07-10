@@ -17,37 +17,28 @@ use App\Jobs\Util\StripeUpdatePaymentMethods;
 
 class StripeController extends BaseController
 {
+    public function update()
+    {
+        if (auth()->user()->isAdmin()) {
+            StripeUpdatePaymentMethods::dispatch(auth()->user()->company());
 
-	public function update()
-	{
-		if(auth()->user()->isAdmin())
-		{
-			
-			StripeUpdatePaymentMethods::dispatch(auth()->user()->company());
+            return response()->json(['message' => 'Processing'], 200);
+        }
 
-			return response()->json(['message' => 'Processing'], 200);
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
 
-		}
-
-		return response()->json(['message' => 'Unauthorized'], 403);
-	}
-
-	public function import()
-	{
-
-		return response()->json(['message' => 'Processing'], 200);
+    public function import()
+    {
+        return response()->json(['message' => 'Processing'], 200);
 
 
-		if(auth()->user()->isAdmin())
-		{
-			
-			ImportStripeCustomers::dispatch(auth()->user()->company());
+        if (auth()->user()->isAdmin()) {
+            ImportStripeCustomers::dispatch(auth()->user()->company());
 
-			return response()->json(['message' => 'Processing'], 200);
-
-		}
-		
-		return response()->json(['message' => 'Unauthorized'], 403);
-	}
-
+            return response()->json(['message' => 'Processing'], 200);
+        }
+        
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
 }

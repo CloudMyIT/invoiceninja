@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Organization',
     'name' => 'Name',
     'website' => 'Website',
@@ -4278,8 +4278,6 @@ $LANG = array(
     'one_time_purchases' => 'One time purchases',
     'recurring_purchases' => 'Recurring purchases',
     'you_might_be_interested_in_following' => 'You might be interested in following',
-);
+];
 
 return $LANG;
-
-?>

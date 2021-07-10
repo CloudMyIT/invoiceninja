@@ -12,19 +12,19 @@
 namespace App\Http\Controllers\ClientPortal;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ClientPortal\Invoices\ShowInvoicesRequest;
 use App\Http\Requests\ClientPortal\Invoices\ProcessInvoicesInBulkRequest;
 use App\Http\Requests\ClientPortal\Invoices\ShowInvoiceRequest;
+use App\Http\Requests\ClientPortal\Invoices\ShowInvoicesRequest;
 use App\Models\Invoice;
 use App\Utils\Number;
 use App\Utils\TempFile;
 use App\Utils\Traits\MakesDates;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
-use Illuminate\Support\Facades\Storage;
 
 class InvoiceController extends Controller
 {
@@ -106,14 +106,12 @@ class InvoiceController extends Controller
 
         //iterate and sum the payable amounts either partial or balance
         $total = 0;
-        foreach($invoices as $invoice)
-        {
-
-            if($invoice->partial > 0)
+        foreach ($invoices as $invoice) {
+            if ($invoice->partial > 0) {
                 $total += $invoice->partial;
-            else
+            } else {
                 $total += $invoice->balance;
-
+            }
         }
 
         //format data
@@ -169,12 +167,20 @@ class InvoiceController extends Controller
         if ($invoices->count() == 1) {
             $invoice = $invoices->first();
             $invitation = $invoice->invitations->first();
-           //$file = $invoice->pdf_file_path($invitation);
-           $file = $invoice->service()->getInvoicePdf(auth()->user());
-           // return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);;
-            return response()->streamDownload(function () use($file) {
-                    echo Storage::get($file);
-            },  basename($file));
+
+            //$file = $invoice->pdf_file_path($invitation);
+            $file = $invoice->service()->getInvoicePdf(auth()->user());
+            
+            $headers = array_merge(
+                [
+                    'Cache-Control:' => 'no-cache',
+                    'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                ],
+                json_decode(config('ninja.pdf_additional_headers'), true)
+            );
+            $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+            //Storage::disk(config('filesystems.default'))->delete($file);
+            return $response;
         }
 
         // enable output of HTTP headers
