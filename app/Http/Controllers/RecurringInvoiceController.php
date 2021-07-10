@@ -503,10 +503,16 @@ class RecurringInvoiceController extends BaseController
 
         $file = $recurring_invoice->service()->getInvoicePdf($contact);
 
-        return response()->streamDownload(function () use($file) {
-                echo Storage::get($file);
-        },  basename($file));
-
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file_path).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'), true)
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
+        //Storage::disk(config('filesystems.default'))->delete($file_path);
+        return $response;
     }
 
     /**

@@ -88,6 +88,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Turbo124\Beacon\Facades\LightLogs;
@@ -197,7 +198,7 @@ class Import implements ShouldQueue
         auth()->user()->setCompany($this->company);
 
         //   $jsonStream = \JsonMachine\JsonMachine::fromFile($this->file_path, "/data");
-        $array = json_decode(file_get_contents($this->file_path), 1);
+        $array = json_decode(Storage::disk(config('filesystems.default'))->get($this->file_path), 1);
         $data = $array['data'];
 
         foreach ($this->available_imports as $import) {

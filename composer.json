@@ -55,6 +55,8 @@
         "laravel/socialite": "^5",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.0",
+        "laravel/vapor-cli": "^1.22",
+        "laravel/vapor-core": "^2.12",
         "league/csv": "^9.6",
         "league/flysystem-aws-s3-v3": "~1.0",
         "league/flysystem-cached-adapter": "^1.1",
@@ -127,7 +129,8 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan vendor:publish --force --tag=livewire:assets --ansi"
         ],
         "format": [
             "vendor/bin/php-cs-fixer fix"

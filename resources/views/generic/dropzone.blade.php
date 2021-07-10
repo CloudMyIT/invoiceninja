@@ -1,8 +1,8 @@
 @section('header')
     @parent
-    <link href="/vendors/css/dropzone.min.css" rel="stylesheet">
-    <link href="/vendors/css/dropzone-basic.min.css" rel="stylesheet">
-    <link href="/vendors/css/sweetalert.css" rel="stylesheet">
+    <link href="{{ asset('/vendors/css/dropzone.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendors/css/dropzone-basic.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendors/css/sweetalert.css') }}" rel="stylesheet">
     <style>
         .dropzone {
             background: white;
@@ -27,8 +27,8 @@
     </form>
 </div>
 @push('scripts')
-    <script src="/vendors/js/dropzone.min.js"></script>
-    <script src="/vendors/js/sweetalert.min.js"></script>
+    <script src="{{ asset('/vendors/js/dropzone.min.js') }}"></script>
+    <script src="{{ asset('/vendors/js/sweetalert.min.js') }}"></script>
     <script>
 
         var contact = {!! auth()->user() !!};

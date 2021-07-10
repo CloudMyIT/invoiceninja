@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 
 class PreviewController extends BaseController
 {
@@ -143,7 +144,16 @@ class PreviewController extends BaseController
             //else
             $file_path = PreviewPdf::dispatchNow($maker->getCompiledHTML(true), auth()->user()->company());
 
-            return response()->download($file_path, basename($file_path), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+            $headers = array_merge(
+                [
+                    'Cache-Control:' => 'no-cache',
+                    'Content-Disposition' => 'inline; filename="'.basename($file_path).'"'
+                ],
+                json_decode(config('ninja.pdf_additional_headers'), true)
+            );
+            $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
+            Storage::disk(config('filesystems.default'))->delete($file_path);
+            return $response;
         }
 
         return $this->blankEntity();
