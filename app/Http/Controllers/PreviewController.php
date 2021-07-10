@@ -152,7 +152,7 @@ class PreviewController extends BaseController
                 json_decode(config('ninja.pdf_additional_headers'), true)
             );
             $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
-            Storage::disk(config('filesystems.default'))->delete($file_path);
+            //Storage::disk(config('filesystems.default'))->delete($file_path);
             return $response;
         }
 
@@ -242,9 +242,15 @@ class PreviewController extends BaseController
 
         DB::connection(config('database.default'))->rollBack();
 
-        $response = Response::make($file_path, 200);
-        $response->header('Content-Type', 'application/pdf');
-
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file_path).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'), true)
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
+        //Storage::disk(config('filesystems.default'))->delete($file_path);
         return $response;
     }
 }

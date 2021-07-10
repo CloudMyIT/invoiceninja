@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
-use Illuminate\Support\Facades\Storage;
 
 class InvoiceController extends Controller
 {
