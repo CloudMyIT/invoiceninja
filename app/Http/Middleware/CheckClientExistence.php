@@ -29,7 +29,7 @@ class CheckClientExistence
     public function handle(Request $request, Closure $next)
     {
         $multiple_contacts = ClientContact::query()
-            ->with('company','client')
+            ->with('company', 'client')
             ->where('email', auth('contact')->user()->email)
             ->whereNotNull('email')
             ->where('email', '<>', '')
@@ -40,7 +40,7 @@ class CheckClientExistence
             ->whereHas('client', function ($query) {
                 return $query->whereNull('deleted_at');
             })
-            ->whereHas('client.company', function ($query){
+            ->whereHas('client.company', function ($query) {
                 return $query->where('account_id', auth('contact')->user()->client->company->account->id);
             })
             ->get();

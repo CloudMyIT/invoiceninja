@@ -139,5 +139,4 @@ class CreditsTest extends TestCase
             ->assertSee('testing-number-02')
             ->assertDontSee('testing-number-03');
     }
-
 }

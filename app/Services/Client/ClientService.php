@@ -12,9 +12,7 @@
 namespace App\Services\Client;
 
 use App\Models\Client;
-use App\Services\Client\PaymentMethod;
 use App\Utils\Number;
-use Illuminate\Database\Eloquent\Collection;
 
 class ClientService
 {
@@ -51,25 +49,25 @@ class ClientService
         $credits = $this->client->credits()
                       ->where('is_deleted', false)
                       ->where('balance', '>', 0)
-                      ->where(function ($query){
-                            $query->whereDate('due_date', '<=', now()->format('Y-m-d'))
+                      ->where(function ($query) {
+                          $query->whereDate('due_date', '<=', now()->format('Y-m-d'))
                                   ->orWhereNull('due_date');
                       })
-                      ->orderBy('created_at','ASC');
+                      ->orderBy('created_at', 'ASC');
 
         return Number::roundValue($credits->sum('balance'), $this->client->currency()->precision);
     }
 
-    public function getCredits() 
+    public function getCredits()
     {
         return $this->client->credits()
                   ->where('is_deleted', false)
                   ->where('balance', '>', 0)
-                  ->where(function ($query){
-                        $query->whereDate('due_date', '<=', now()->format('Y-m-d'))
+                  ->where(function ($query) {
+                      $query->whereDate('due_date', '<=', now()->format('Y-m-d'))
                               ->orWhereNull('due_date');
                   })
-                  ->orderBy('created_at','ASC')->get();
+                  ->orderBy('created_at', 'ASC')->get();
     }
 
     public function getPaymentMethods(float $amount)

@@ -11,13 +11,11 @@
 
 namespace App\Models;
 
-use App\Events\Quote\QuoteWasUpdated;
 use App\Helpers\Invoice\InvoiceSum;
 use App\Helpers\Invoice\InvoiceSumInclusive;
 use App\Jobs\Entity\CreateEntityPdf;
 use App\Models\Presenters\QuotePresenter;
 use App\Services\Quote\QuoteService;
-use App\Utils\Ninja;
 use App\Utils\Traits\MakesDates;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceValues;
@@ -206,25 +204,24 @@ class Quote extends BaseModel
     public function pdf_file_path($invitation = null, string $type = 'path', bool $portal = false)
     {
         if (! $invitation) {
-
-            if($this->invitations()->exists())
+            if ($this->invitations()->exists()) {
                 $invitation = $this->invitations()->first();
-            else{
+            } else {
                 $this->service()->createInvitations();
                 $invitation = $this->invitations()->first();
             }
-
         }
 
-        if(!$invitation)
+        if (!$invitation) {
             throw new \Exception('Hard fail, could not create an invitation - is there a valid contact?');
+        }
 
         $file_path = $this->client->quote_filepath($invitation).$this->numberFormatter().'.pdf';
 
-        if(Storage::disk(config('filesystems.default'))->exists($file_path)){
+        if (Storage::disk(config('filesystems.default'))->exists($file_path)) {
             return Storage::disk(config('filesystems.default'))->{$type}($file_path);
         } else {
-            $file_path = CreateEntityPdf::dispatchNow($invitation,config('filesystems.default'));
+            $file_path = CreateEntityPdf::dispatchNow($invitation, config('filesystems.default'));
             return Storage::disk(config('filesystems.default'))->{$type}($file_path);
         }
     }

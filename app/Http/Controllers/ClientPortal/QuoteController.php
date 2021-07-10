@@ -15,8 +15,8 @@ namespace App\Http\Controllers\ClientPortal;
 use App\Events\Quote\QuoteWasApproved;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\Quotes\ProcessQuotesInBulkRequest;
-use App\Http\Requests\ClientPortal\Quotes\ShowQuotesRequest;
 use App\Http\Requests\ClientPortal\Quotes\ShowQuoteRequest;
+use App\Http\Requests\ClientPortal\Quotes\ShowQuotesRequest;
 use App\Jobs\Invoice\InjectSignature;
 use App\Models\Quote;
 use App\Utils\Ninja;
@@ -89,7 +89,6 @@ class QuoteController extends Controller
         }
 
         if ($quotes->count() == 1) {
-
             $file = $quotes->first()->service()->getQuotePdf();
             $headers = array_merge(
                 [

@@ -15,8 +15,8 @@ use App\Models\Invoice;
 use App\Utils\Ninja;
 use App\Utils\Number;
 use App\Utils\Traits\MakesHash;
-use stdClass;
 use Illuminate\Support\Facades\App;
+use stdClass;
 
 class PaymentFailureObject
 {
@@ -51,12 +51,10 @@ class PaymentFailureObject
         $this->amount = $amount;
 
         $this->company = $company;
-
     }
 
     public function build()
     {
-
         App::forgetInstance('translator');
         /* Init a new copy of the translator*/
         $t = app('translator');
@@ -79,20 +77,16 @@ class PaymentFailureObject
 
     private function getAmount()
     {
-
-       return $this->amount;
-
+        return $this->amount;
     }
 
     private function getSubject()
     {
-
         return
             ctrans(
                 'texts.payment_failed_subject',
                 ['client' => $this->client->present()->name()]
             );
-
     }
 
     private function getData()
@@ -121,7 +115,6 @@ class PaymentFailureObject
 
     private function buildFailedInvoices()
     {
-
         $text = '';
 
         // foreach($this->invoices as $invoice)
@@ -132,6 +125,5 @@ class PaymentFailureObject
         // }
 
         return $text;
-
     }
 }

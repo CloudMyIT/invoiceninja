@@ -17,16 +17,12 @@ use App\Jobs\Util\UnlinkFile;
 use App\Mail\DownloadInvoices;
 use App\Models\Company;
 use App\Models\User;
-use App\Utils\TempFile;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use ZipStream\Option\Archive;
-use ZipStream\ZipStream;
 use ZipArchive;
 
 class ZipInvoices implements ShouldQueue
@@ -79,11 +75,10 @@ class ZipInvoices implements ShouldQueue
         $file_name = date('Y-m-d').'_'.str_replace(' ', '_', trans('texts.invoices')).'.zip';
         
         $tmp_file = @tempnam('.', '');
-        $zip->open($tmp_file , ZipArchive::OVERWRITE);
+        $zip->open($tmp_file, ZipArchive::OVERWRITE);
 
         # loop through each file
         foreach ($this->invoices as $invoice) {
-            
             $inv = $invoice->invitations->first();
 
             # download file

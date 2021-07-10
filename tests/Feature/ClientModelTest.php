@@ -13,7 +13,6 @@ namespace Tests\Feature;
 
 use App\Models\CompanyGateway;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\URL;
 use Tests\MockAccountData;
 use Tests\TestCase;
 
@@ -50,7 +49,5 @@ class ClientModelTest extends TestCase
         $this->assertGreaterThan(0, CompanyGateway::count());
 
         $this->assertEquals(1, count($payment_methods));
-
     }
-
 }

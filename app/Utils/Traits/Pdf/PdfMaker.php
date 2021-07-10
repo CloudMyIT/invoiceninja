@@ -43,8 +43,9 @@ trait PdfMaker
                         ->setHtml($html)
                         ->generate();
 
-        if($generated)
+        if ($generated) {
             return $generated;
+        }
 
 
         throw new InternalPDFFailure('There was an issue generating the PDF locally');

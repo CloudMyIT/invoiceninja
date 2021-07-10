@@ -11,9 +11,7 @@
 
 namespace App\Models;
 
-use App\Models\Language;
 use App\Models\Presenters\CompanyPresenter;
-use App\Models\User;
 use App\Services\Notification\NotificationService;
 use App\Utils\Ninja;
 use App\Utils\Traits\AppSetup;
@@ -313,11 +311,11 @@ class Company extends BaseModel
 
     public function timezone()
     {
-
         $timezones = Cache::get('timezones');
 
-        if(!$timezones)
+        if (!$timezones) {
             $this->buildCache(true);
+        }
 
         return $timezones->filter(function ($item) {
             return $item->id == $this->settings->timezone_id;
@@ -351,11 +349,11 @@ class Company extends BaseModel
      */
     public function language()
     {
-        
         $languages = Cache::get('languages');
 
-        if(!$languages)
+        if (!$languages) {
             $this->buildCache(true);
+        }
 
         return $languages->filter(function ($item) {
             return $item->id == $this->settings->language_id;
@@ -473,9 +471,9 @@ class Company extends BaseModel
     public function domain()
     {
         if (Ninja::isHosted()) {
-
-            if($this->portal_mode == 'domain')
+            if ($this->portal_mode == 'domain') {
                 return $this->portal_domain;
+            }
 
             return "https://{$this->subdomain}." . config('ninja.app_domain');
         }

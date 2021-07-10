@@ -13,12 +13,11 @@ namespace App\Mail\Admin;
 
 use App\Utils\Ninja;
 use App\Utils\Number;
-use stdClass;
 use Illuminate\Support\Facades\App;
+use stdClass;
 
 class EntityCreatedObject
 {
-
     public $entity_type;
 
     public $entity;
@@ -109,13 +108,13 @@ class EntityCreatedObject
     private function getMessage()
     {
         return ctrans(
-                $this->template_body,
-                [
+            $this->template_body,
+            [
                     'amount' => $this->getAmount(),
                     'client' => $this->contact->present()->name(),
                     'invoice' => $this->entity->number,
                 ]
-            );
+        );
     }
 
     private function getData()

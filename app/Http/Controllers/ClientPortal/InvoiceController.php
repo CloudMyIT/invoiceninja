@@ -12,9 +12,9 @@
 namespace App\Http\Controllers\ClientPortal;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ClientPortal\Invoices\ShowInvoicesRequest;
 use App\Http\Requests\ClientPortal\Invoices\ProcessInvoicesInBulkRequest;
 use App\Http\Requests\ClientPortal\Invoices\ShowInvoiceRequest;
+use App\Http\Requests\ClientPortal\Invoices\ShowInvoicesRequest;
 use App\Models\Invoice;
 use App\Utils\Number;
 use App\Utils\TempFile;
@@ -106,14 +106,12 @@ class InvoiceController extends Controller
 
         //iterate and sum the payable amounts either partial or balance
         $total = 0;
-        foreach($invoices as $invoice)
-        {
-
-            if($invoice->partial > 0)
+        foreach ($invoices as $invoice) {
+            if ($invoice->partial > 0) {
                 $total += $invoice->partial;
-            else
+            } else {
                 $total += $invoice->balance;
-
+            }
         }
 
         //format data

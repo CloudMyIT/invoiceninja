@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\App;
 
 class AccountCreatedObject
 {
-
     public $user;
 
     public $company;
@@ -27,12 +26,11 @@ class AccountCreatedObject
     public function __construct($user, $company)
     {
         $this->user = $user;
-    	$this->company = $company;
+        $this->company = $company;
     }
 
     public function build()
     {
-
         App::forgetInstance('translator');
         /* Init a new copy of the translator*/
         $t = app('translator');

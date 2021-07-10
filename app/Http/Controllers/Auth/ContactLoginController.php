@@ -36,15 +36,13 @@ class ContactLoginController extends Controller
     public function showLoginForm(Request $request)
     {
         //if we are on the root domain invoicing.co do not show any company logos
-        if(Ninja::isHosted() && count(explode('.', request()->getHost())) == 2){
+        if (Ninja::isHosted() && count(explode('.', request()->getHost())) == 2) {
             $company = null;
-        }elseif (strpos($request->getHost(), 'invoicing.co') !== false) {
+        } elseif (strpos($request->getHost(), 'invoicing.co') !== false) {
             $subdomain = explode('.', $request->getHost())[0];
             $company = Company::where('subdomain', $subdomain)->first();
-        } elseif(Ninja::isHosted() && $company = Company::where('portal_domain', $request->getSchemeAndHttpHost())->first()){
-
-        }
-        elseif (Ninja::isSelfHost()) {
+        } elseif (Ninja::isHosted() && $company = Company::where('portal_domain', $request->getSchemeAndHttpHost())->first()) {
+        } elseif (Ninja::isSelfHost()) {
             $company = Account::first()->default_company;
         } else {
             $company = null;
@@ -54,7 +52,6 @@ class ContactLoginController extends Controller
         $account = Account::find($account_id);
 
         return $this->render('auth.login', ['account' => $account, 'company' => $company]);
-
     }
 
     public function login(Request $request)

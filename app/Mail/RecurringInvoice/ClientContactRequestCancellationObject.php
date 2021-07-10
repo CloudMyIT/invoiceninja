@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\App;
 
 class ClientContactRequestCancellationObject
 {
-
     public $recurring_invoice;
 
     public $client_contact;
@@ -35,7 +34,6 @@ class ClientContactRequestCancellationObject
 
     public function build()
     {
-
         App::forgetInstance('translator');
         $t = app('translator');
         $t->replace(Ninja::transformTranslations($this->company->settings));

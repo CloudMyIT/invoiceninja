@@ -13,8 +13,8 @@ namespace App\Mail\Admin;
 
 use App\Utils\Ninja;
 use App\Utils\Number;
-use stdClass;
 use Illuminate\Support\Facades\App;
+use stdClass;
 
 class EntityViewedObject
 {
@@ -41,7 +41,6 @@ class EntityViewedObject
 
     public function build()
     {
-
         App::forgetInstance('translator');
         /* Init a new copy of the translator*/
         $t = app('translator');

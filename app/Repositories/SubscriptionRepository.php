@@ -12,13 +12,11 @@
 
 namespace App\Repositories;
 
-
 use App\DataMapper\ClientSettings;
 use App\DataMapper\InvoiceItem;
 use App\Factory\InvoiceFactory;
 use App\Models\Client;
 use App\Models\ClientContact;
-use App\Models\Invoice;
 use App\Models\InvoiceInvitation;
 use App\Models\Subscription;
 use App\Utils\Traits\CleanLineItems;
@@ -45,9 +43,9 @@ class SubscriptionRepository extends BaseRepository
     private function calculatePrice($subscription) :array
     {
 
-		// DB::beginTransaction();
+        // DB::beginTransaction();
         DB::connection(config('database.default'))->beginTransaction();
-		$data = [];
+        $data = [];
 
         $client = Client::factory()->create([
                 'user_id' => $subscription->user_id,
@@ -100,25 +98,21 @@ class SubscriptionRepository extends BaseRepository
     {
         $multiplier = $is_credit ? -1 : 1;
 
-    	$line_items = [];
+        $line_items = [];
 
-        if(!$is_recurring)
-        {
-            foreach($subscription->service()->products() as $product)
-            {
+        if (!$is_recurring) {
+            foreach ($subscription->service()->products() as $product) {
                 $line_items[] = (array)$this->makeLineItem($product, $multiplier);
             }
         }
         
-        foreach($subscription->service()->recurring_products() as $product)
-        {
+        foreach ($subscription->service()->recurring_products() as $product) {
             $line_items[] = (array)$this->makeLineItem($product, $multiplier);
         }
 
-    	$line_items = $this->cleanItems($line_items);
+        $line_items = $this->cleanItems($line_items);
 
         return $line_items;
-
     }
 
     private function makeLineItem($product, $multiplier)

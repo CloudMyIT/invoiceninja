@@ -12,8 +12,6 @@
 
 namespace App\PaymentDrivers;
 
-
-use App\Http\Requests\ClientPortal\Payments\PaymentResponseRequest;
 use App\Jobs\Mail\PaymentFailureMailer;
 use App\Jobs\Util\SystemLogger;
 use App\Models\ClientGatewayToken;
@@ -27,7 +25,6 @@ use App\PaymentDrivers\Braintree\CreditCard;
 use App\PaymentDrivers\Braintree\PayPal;
 use Braintree\Gateway;
 use Exception;
-use Illuminate\Http\Request;
 
 class BraintreePaymentDriver extends BaseDriver
 {
