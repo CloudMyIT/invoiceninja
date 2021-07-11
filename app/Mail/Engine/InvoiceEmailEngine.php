@@ -114,8 +114,6 @@ class InvoiceEmailEngine extends BaseEmailEngine
             } else {
                 $this->setAttachments([$this->invoice->pdf_file_path($this->invitation)]);
             }
-
-            // $this->setAttachments(['path' => $this->invoice->pdf_file_path(), 'name' => basename($this->invoice->pdf_file_path())]);
         }
 
         //attach third party documents

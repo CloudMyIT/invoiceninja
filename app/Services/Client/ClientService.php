@@ -13,7 +13,6 @@ namespace App\Services\Client;
 
 use App\Models\Client;
 use App\Utils\Number;
-use Illuminate\Database\Eloquent\Collection;
 
 class ClientService
 {
@@ -59,14 +58,16 @@ class ClientService
         return Number::roundValue($credits->sum('balance'), $this->client->currency()->precision);
     }
 
-    public function getCredits() :Collection
+    public function getCredits()
     {
         return $this->client->credits()
                   ->where('is_deleted', false)
                   ->where('balance', '>', 0)
-                  ->whereDate('due_date', '<=', now()->format('Y-m-d'))
-                  ->orWhere('due_date', null)
-                  ->orderBy('created_at', 'ASC');
+                  ->where(function ($query) {
+                      $query->whereDate('due_date', '<=', now()->format('Y-m-d'))
+                              ->orWhereNull('due_date');
+                  })
+                  ->orderBy('created_at', 'ASC')->get();
     }
 
     public function getPaymentMethods(float $amount)

@@ -1,8 +1,8 @@
 @section('header')
     @parent
-    <link href="/vendors/css/dropzone.min.css" rel="stylesheet">
-    <link href="/vendors/css/dropzone-basic.min.css" rel="stylesheet">
-    <link href="/vendors/css/sweetalert.css" rel="stylesheet">
+    <link href="{{ asset('/vendors/css/dropzone.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendors/css/dropzone-basic.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendors/css/sweetalert.css') }}" rel="stylesheet">
     <style>
         .dropzone {
             background: white;

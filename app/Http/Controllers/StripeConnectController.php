@@ -19,7 +19,6 @@ use App\Models\Client;
 use App\Models\Company;
 use App\Models\CompanyGateway;
 use App\Models\GatewayType;
-use App\PaymentDrivers\Stripe\Connect\Account;
 use Stripe\Exception\ApiErrorException;
 
 class StripeConnectController extends BaseController
@@ -59,12 +58,6 @@ class StripeConnectController extends BaseController
         $redirect_uri = 'https://invoicing.co/stripe/completed';
         $endpoint = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id={$stripe_client_id}&redirect_uri={$redirect_uri}&scope=read_write&state={$token}";
 
-        // if($email = $request->getContact()->email)
-        //     $endpoint .= "&stripe_user[email]={$email}";
-
-        // $company_name = str_replace(" ", "_", $company->present()->name());
-        // $endpoint .= "&stripe_user[business_name]={$company_name}";
-
         return redirect($endpoint);
     }
 
@@ -81,18 +74,23 @@ class StripeConnectController extends BaseController
             nlog($e->getMessage());
         }
 
-        // nlog($response);
-
         $company = Company::where('company_key', $request->getTokenContent()['company_key'])->first();
 
-        $company_gateway = CompanyGatewayFactory::create($company->id, $company->owner()->id);
-        $fees_and_limits = new \stdClass;
-        $fees_and_limits->{GatewayType::CREDIT_CARD} = new FeesAndLimits;
-        $company_gateway->gateway_key = 'd14dd26a47cecc30fdd65700bfb67b34';
-        $company_gateway->fees_and_limits = $fees_and_limits;
-        $company_gateway->setConfig([]);
-        $company_gateway->token_billing = 'always';
-        // $company_gateway->save();
+        $company_gateway = CompanyGateway::query()
+            ->where('gateway_key', 'd14dd26a47cecc30fdd65700bfb67b34')
+            ->where('company_id', $company->id)
+            ->first();
+
+        if (!$company_gateway) {
+            $company_gateway = CompanyGatewayFactory::create($company->id, $company->owner()->id);
+            $fees_and_limits = new \stdClass;
+            $fees_and_limits->{GatewayType::CREDIT_CARD} = new FeesAndLimits;
+            $company_gateway->gateway_key = 'd14dd26a47cecc30fdd65700bfb67b34';
+            $company_gateway->fees_and_limits = $fees_and_limits;
+            $company_gateway->setConfig([]);
+            $company_gateway->token_billing = 'always';
+            // $company_gateway->save();
+        }
 
         $payload = [
             'account_id' => $response->stripe_user_id,
@@ -104,18 +102,6 @@ class StripeConnectController extends BaseController
             "refresh_token" => $response->refresh_token,
             "access_token" => $response->access_token
         ];
-
-        /* Link account if existing account exists */
-        // if($account_id = $this->checkAccountAlreadyLinkToEmail($company_gateway, $request->getContact()->email)) {
-            
-        //     $payload['account_id'] = $account_id;
-        //     $payload['stripe_user_id'] = $account_id;
-        //     $company_gateway->setConfig($payload);
-        //     $company_gateway->save();
-
-        //     return view('auth.connect.existing');
-
-        // }
 
         $company_gateway->setConfig($payload);
         $company_gateway->save();

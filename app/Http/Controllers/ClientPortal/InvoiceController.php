@@ -21,6 +21,7 @@ use App\Utils\TempFile;
 use App\Utils\Traits\MakesDates;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
@@ -166,10 +167,20 @@ class InvoiceController extends Controller
         if ($invoices->count() == 1) {
             $invoice = $invoices->first();
             $invitation = $invoice->invitations->first();
+
             //$file = $invoice->pdf_file_path($invitation);
             $file = $invoice->service()->getInvoicePdf(auth()->user());
-            return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
-            ;
+            
+            $headers = array_merge(
+                [
+                    'Cache-Control:' => 'no-cache',
+                    'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                ],
+                json_decode(config('ninja.pdf_additional_headers'), true)
+            );
+            $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+            //Storage::disk(config('filesystems.default'))->delete($file);
+            return $response;
         }
 
         // enable output of HTTP headers

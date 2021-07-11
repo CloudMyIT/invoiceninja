@@ -40,7 +40,10 @@ return [
     */
 
     'serve_assets' => [
-        'flutter_service_worker.js'
+        "flutter_service_worker.js",
+        "favicon.png",
+        "version.json",
+        "favicon.ico"
     ],
 
 ];

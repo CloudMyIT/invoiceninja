@@ -1,5 +1,5 @@
 FROM laravelphp/vapor:php80
 
-RUN apk add chromium nodejs npm
+RUN apk add chromium nss
 
 COPY . /var/task

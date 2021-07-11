@@ -30,6 +30,9 @@ class StripeController extends BaseController
 
     public function import()
     {
+        return response()->json(['message' => 'Processing'], 200);
+
+
         if (auth()->user()->isAdmin()) {
             ImportStripeCustomers::dispatch(auth()->user()->company());
 

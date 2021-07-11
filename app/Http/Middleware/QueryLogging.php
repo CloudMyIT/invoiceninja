@@ -49,10 +49,11 @@ class QueryLogging
             $count = count($queries);
             $timeEnd = microtime(true);
             $time = $timeEnd - $timeStart;
-
-            //nlog($request->method().' - '.urldecode($request->url()).": $count queries - ".$time);
-            //  if($count > 50)
-            //nlog($queries);
+        
+            if ($count > 150) {
+                nlog($queries);
+            }
+            
             $ip = '';
             
             if (request()->header('Cf-Connecting-Ip')) {

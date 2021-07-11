@@ -63,7 +63,7 @@ class CreateEntityPdf implements ShouldQueue
      *
      * @param $invitation
      */
-    public function __construct($invitation, $disk = 'public')
+    public function __construct($invitation, $disk = null)
     {
         $this->invitation = $invitation;
 
@@ -85,9 +85,7 @@ class CreateEntityPdf implements ShouldQueue
 
         $this->contact = $invitation->contact;
 
-        $this->disk = $disk;
-        
-        // $this->disk = $disk ?? config('filesystems.default');
+        $this->disk = $disk ?? config('filesystems.default');
     }
 
     public function handle()
@@ -198,8 +196,6 @@ class CreateEntityPdf implements ShouldQueue
                 if (!Storage::disk($this->disk)->exists($path)) {
                     Storage::disk($this->disk)->makeDirectory($path, 0775);
                 }
-
-                nlog($file_path);
                 
                 Storage::disk($this->disk)->put($file_path, $pdf);
             } catch (\Exception $e) {

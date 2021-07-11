@@ -36,6 +36,7 @@ use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class CreditController.
@@ -535,8 +536,18 @@ class CreditController extends BaseController
                 }
                 break;
             case 'download':
-                $file = $credit->pdf_file_path();
-                return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+                $file = $credit->service()->getCreditPdf($credit->invitations->first());
+                $headers = array_merge(
+                    [
+                        'Cache-Control:' => 'no-cache',
+                        'Content-Disposition' => 'inline; filename="'.basename($file).'"'
+                    ],
+                    json_decode(config('ninja.pdf_additional_headers'), true)
+                );
+                $response = response()->make(Storage::disk(config('filesystems.default'))->get($file), 200, $headers);
+                Storage::disk(config('filesystems.default'))->delete($file);
+                return $response;
+
               break;
             case 'archive':
                 $this->credit_repository->archive($credit);
@@ -586,7 +597,16 @@ class CreditController extends BaseController
 
         $file_path = $credit->service()->getCreditPdf($invitation);
 
-        return response()->download($file_path, basename($file_path), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+        $headers = array_merge(
+            [
+                'Cache-Control:' => 'no-cache',
+                'Content-Disposition' => 'inline; filename="'.basename($file_path).'"'
+            ],
+            json_decode(config('ninja.pdf_additional_headers'), true)
+        );
+        $response = response()->make(Storage::disk(config('filesystems.default'))->get($file_path), 200, $headers);
+        Storage::disk(config('filesystems.default'))->delete($file_path);
+        return $response;
     }
 
     /**

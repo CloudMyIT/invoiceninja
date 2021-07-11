@@ -66,8 +66,9 @@ class UpdateCompanyRequest extends Request
     {
         $input = $this->all();
 
-        // if(array_key_exists('portal_domain', $input) && strlen($input['portal_domain']) > 1)
-        //     $input['portal_domain'] = str_replace("http:", "https:", $input['portal_domain']);
+        if (Ninja::isHosted() && array_key_exists('portal_domain', $input) && strlen($input['portal_domain']) > 1) {
+            $input['portal_domain'] = $this->addScheme($input['portal_domain']);
+        }
 
         if (array_key_exists('settings', $input)) {
             $input['settings'] = $this->filterSaveableSettings($input['settings']);
@@ -103,5 +104,14 @@ class UpdateCompanyRequest extends Request
         }
 
         return $settings;
+    }
+
+    private function addScheme($url, $scheme = 'https://')
+    {
+        $url = str_replace("http://", "", $url);
+
+        $url =  parse_url($url, PHP_URL_SCHEME) === null ? $scheme . $url : $url;
+
+        return rtrim($url, '/');
     }
 }

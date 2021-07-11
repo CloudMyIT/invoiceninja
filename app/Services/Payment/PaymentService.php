@@ -115,6 +115,7 @@ class PaymentService
                                     ->service()
                                     ->getCredits();
 
+
             foreach ($credits as $credit) {
                 //starting invoice balance
                 $invoice_balance = $invoice->balance;

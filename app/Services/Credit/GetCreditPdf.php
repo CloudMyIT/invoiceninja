@@ -13,7 +13,6 @@ namespace App\Services\Credit;
 
 use App\Jobs\Entity\CreateEntityPdf;
 use App\Services\AbstractService;
-use Illuminate\Support\Facades\Storage;
 
 class GetCreditPdf extends AbstractService
 {
@@ -40,10 +39,8 @@ class GetCreditPdf extends AbstractService
 
         $file_path = $path.$this->credit->numberFormatter().'.pdf';
 
-        $disk = 'public';
-
         $file_path = CreateEntityPdf::dispatchNow($this->invitation);
 
-        return Storage::disk($disk)->path($file_path);
+        return $file_path;
     }
 }

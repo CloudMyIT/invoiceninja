@@ -76,18 +76,22 @@ class Handler extends ExceptionHandler
 
         if (Ninja::isHosted() && !($exception instanceof ValidationException)) {
             app('sentry')->configureScope(function (Scope $scope): void {
+                $name = 'hosted@invoiceninja.com';
+
                 if (auth()->guard('contact') && auth()->guard('contact')->user()) {
+                    $name = "Contact = ".auth()->guard('contact')->user()->email;
                     $key = auth()->guard('contact')->user()->company->account->key;
                 } elseif (auth()->guard('user') && auth()->guard('user')->user()) {
+                    $name = "Admin = ".auth()->guard('user')->user()->email;
                     $key = auth()->user()->account->key;
                 } else {
                     $key = 'Anonymous';
                 }
                 
                 $scope->setUser([
-                        'id'    => 'Hosted_User',
+                        'id'    => $key,
                         'email' => 'hosted@invoiceninja.com',
-                        'name'  => $key,
+                        'name'  => $name,
                     ]);
             });
 
@@ -114,7 +118,6 @@ class Handler extends ExceptionHandler
             }
         }
 
-        // if(config('ninja.expanded_logging'))
         parent::report($exception);
     }
 
@@ -190,7 +193,7 @@ class Handler extends ExceptionHandler
         } elseif ($exception instanceof GenericPaymentDriverFailure && $request->expectsJson()) {
             return response()->json(['message' => $exception->getMessage()], 400);
         } elseif ($exception instanceof GenericPaymentDriverFailure) {
-            $data['message'] = $exception->getMessage();
+            return response()->json(['message' => $exception->getMessage()], 400);
         }
 
         return parent::render($request, $exception);

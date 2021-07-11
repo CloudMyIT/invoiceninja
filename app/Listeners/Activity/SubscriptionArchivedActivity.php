@@ -50,7 +50,7 @@ class SubscriptionArchivedActivity implements ShouldQueue
         $fields->subscription_id = $subscription->id;
         $fields->user_id = $user_id;
         $fields->company_id = $subscription->company_id;
-        $fields->activity_type_id = Activity::ARCHIVE_SUBSCRIPTIOn;
+        $fields->activity_type_id = Activity::ARCHIVE_SUBSCRIPTION;
         
         $this->activity_repo->save($fields, $subscription, $event->event_vars);
     }

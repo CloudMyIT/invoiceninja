@@ -53,5 +53,10 @@
     var hashed_id = '';
 </script>
 
+@if (app()->environment('local'))
+<script defer src=" {{ mix('/js/client_create.min.js') }}"></script>
+@else
 <script defer src=" {{ asset('/js/client_create.min.js') }}"></script>
+@endif
+
 @endsection

@@ -1,10 +1,11 @@
-id: 22156
+id: 22557
 name: invoiceninja
 environments:
     production:
         memory: 1024
         cli-memory: 512
         runtime: 'php-8.0:al2'
+        domain: invoicing.cloudmy.it
         build:
             - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
             - 'php artisan event:cache'
@@ -12,24 +13,13 @@ environments:
     staging:
         memory: 1024
         cli-memory: 512
-        cache: invoiceninja-cache
-        database: InvoiceNinja
-        storage: cmit-invoiceninja-staging
+        timeout: 30
         runtime: docker
+        domain: invoicing-staging.cloudmy.it
+        storage: invoicing-staging
+        database: InvoiceNinja
+        cache: invoiceninja-cache
         build:
             - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install'
             - 'php artisan event:cache'
             - 'npm ci && npm run dev && rm -rf node_modules'
-
-    dev:
-        database: InvoiceNinja
-        storage: cmit-invoiceninja-dev
-        cache: invoiceninja-cache
-        memory: 1024
-        cli-memory: 512
-        domain: invoice-dev.cloudmy.it
-        runtime: docker
-        build:
-            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
-            - 'php artisan event:cache'
-            - 'npm ci && npm run prod && rm -rf node_modules'

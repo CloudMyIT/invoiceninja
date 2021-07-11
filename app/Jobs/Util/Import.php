@@ -83,6 +83,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Turbo124\Beacon\Facades\LightLogs;
@@ -185,11 +186,14 @@ class Import implements ShouldQueue
     {
         set_time_limit(0);
 
+        nlog("Starting Migration");
+        nlog($this->user->email);
+        
         auth()->login($this->user, false);
         auth()->user()->setCompany($this->company);
 
         //   $jsonStream = \JsonMachine\JsonMachine::fromFile($this->file_path, "/data");
-        $array = json_decode(file_get_contents($this->file_path), 1);
+        $array = json_decode(Storage::disk(config('filesystems.default'))->get($this->file_path), 1);
         $data = $array['data'];
 
         foreach ($this->available_imports as $import) {
@@ -319,7 +323,7 @@ class Import implements ShouldQueue
 
         $data = $this->transformCompanyData($data);
 
-        if (Ninja::isHosted() && strlen($data['subdomain']) > 1) {
+        if (Ninja::isHosted()) {
             if (!MultiDB::checkDomainAvailable($data['subdomain'])) {
                 $data['subdomain'] = MultiDB::randomSubdomainGenerator();
             }
@@ -353,6 +357,10 @@ class Import implements ShouldQueue
             unset($data['referral_code']);
         }
 
+        if (isset($data['custom_fields']) && is_array($data['custom_fields'])) {
+            $data['custom_fields'] = $this->parseCustomFields($data['custom_fields']);
+        }
+
         $company_repository = new CompanyRepository();
         $company_repository->save($data, $this->company);
 
@@ -372,6 +380,39 @@ class Import implements ShouldQueue
         $rules = null;
         $validator = null;
         $company_repository = null;
+    }
+
+    private function parseCustomFields($fields) :array
+    {
+        if (array_key_exists('account1', $fields)) {
+            $fields['company1'] = $fields['account1'];
+        }
+
+        if (array_key_exists('account2', $fields)) {
+            $fields['company2'] = $fields['account2'];
+        }
+
+        if (array_key_exists('invoice1', $fields)) {
+            $fields['surcharge1'] = $fields['invoice1'];
+        }
+
+        if (array_key_exists('invoice2', $fields)) {
+            $fields['surcharge2'] = $fields['invoice2'];
+        }
+
+        if (array_key_exists('invoice_text1', $fields)) {
+            $fields['invoice1'] = $fields['invoice_text1'];
+        }
+
+        if (array_key_exists('invoice_text2', $fields)) {
+            $fields['invoice2'] = $fields['invoice_text2'];
+        }
+
+        foreach ($fields as &$value) {
+            $value = (string) $value;
+        }
+
+        return $fields;
     }
 
     private function transformCompanyData(array $data): array
@@ -1306,7 +1347,9 @@ class Import implements ShouldQueue
 
             if (isset($modified['fees_and_limits'])) {
                 $modified['fees_and_limits'] = $this->cleanFeesAndLimits($modified['fees_and_limits']);
-            } elseif (Ninja::isHosted() && $modified['gateway_key'] == 'd14dd26a37cecc30fdd65700bfb55b23') {
+            }
+
+            if (Ninja::isHosted() && $modified['gateway_key'] == 'd14dd26a37cecc30fdd65700bfb55b23') {
                 $modified['gateway_key'] = 'd14dd26a47cecc30fdd65700bfb67b34';
                 $modified['fees_and_limits'] = [];
             }

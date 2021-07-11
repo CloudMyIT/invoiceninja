@@ -14,6 +14,7 @@ namespace App\Models;
 use App\Models\Presenters\CompanyPresenter;
 use App\Services\Notification\NotificationService;
 use App\Utils\Ninja;
+use App\Utils\Traits\AppSetup;
 use App\Utils\Traits\CompanySettingsSaver;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\ThrottlesEmail;
@@ -29,6 +30,7 @@ class Company extends BaseModel
     use MakesHash;
     use CompanySettingsSaver;
     use ThrottlesEmail;
+    use AppSetup;
 
     const ENTITY_RECURRING_INVOICE = 'recurring_invoice';
     const ENTITY_CREDIT = 'credit';
@@ -309,7 +311,17 @@ class Company extends BaseModel
 
     public function timezone()
     {
-        return Timezone::find($this->settings->timezone_id);
+        $timezones = Cache::get('timezones');
+
+        if (!$timezones) {
+            $this->buildCache(true);
+        }
+
+        return $timezones->filter(function ($item) {
+            return $item->id == $this->settings->timezone_id;
+        })->first();
+
+        // return Timezone::find($this->settings->timezone_id);
     }
 
     public function designs()
@@ -337,7 +349,18 @@ class Company extends BaseModel
      */
     public function language()
     {
-        return Language::find($this->settings->language_id);
+        $languages = Cache::get('languages');
+
+        if (!$languages) {
+            $this->buildCache(true);
+        }
+
+        return $languages->filter(function ($item) {
+            return $item->id == $this->settings->language_id;
+        })->first();
+
+
+        // return Language::find($this->settings->language_id);
     }
 
     public function getLocale()

@@ -47,24 +47,25 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <!-- Scripts -->
-        @if(strpos(Request::url(),'setup') === false)
-        <script src="{{ asset('js/app.js') }}" defer></script>
-        @else
-        <script src="{{ asset('js/app.js') }}" defer></script>
-        @endif
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.x/dist/alpine.min.js" defer></script>
+        @if (app()->environment('local'))
+            <script src="{{ mix('js/app.js') }}" defer></script>
+
+            <!-- Styles -->
+            <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+            {{-- <link href="{{ mix('favicon.png') }}" rel="shortcut icon" type="image/png"> --}}
+        @else
+            <script src="{{ asset('js/app.js') }}" defer></script>
+            
+            <!-- Styles -->
+            <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+            {{-- <link href="{{ asset('favicon.png') }}" rel="shortcut icon" type="image/png"> --}}
+        @endif
 
         <!-- Fonts -->
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet" type="text/css">
 
-        <!-- Styles -->
-        @if(strpos(Request::url(),'setup') === false)
-            <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-        @else
-            <link href="{{ str_replace("setup", "", Request::url())}}css/app.css" rel="stylesheet">
-        @endif
-        {{-- <link href="{{ asset('favicon.png') }}" rel="shortcut icon" type="image/png"> --}}
 
         <link rel="canonical" href="{{ config('ninja.app_url') }}/{{ request()->path() }}"/>
 
