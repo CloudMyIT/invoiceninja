@@ -49,7 +49,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->job(new DiskCleanup)->daily()->withoutOverlapping();
 
-        $schedule->command('ninja:check-data --database=db-ninja-01')->daily()->withoutOverlapping();
+        $schedule->command('ninja:check-data')->daily()->withoutOverlapping();
 
         $schedule->job(new ReminderJob)->hourly()->withoutOverlapping();
 

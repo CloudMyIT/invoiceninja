@@ -141,7 +141,7 @@ class SetupController extends Controller
         }
 
         try {
-            if (!config('preconfigured_install')) {
+            if (!config('ninja.preconfigured_install')) {
                 foreach ($env_values as $property => $value) {
                     $this->updateEnvironmentProperty($property, $value);
                 }
