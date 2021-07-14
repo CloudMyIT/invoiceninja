@@ -60,7 +60,7 @@ class MultiDB
         $current_db = config('database.default');
 
         foreach (self::$dbs as $db) {
-            if (Company::on($db)->whereSubdomain($subdomain)->get()->count() >= 1) {
+            if (Company::on($db)->whereSubdomain($subdomain)->exists()) {
                 self::setDb($current_db);
                 return false;
             }
@@ -73,14 +73,13 @@ class MultiDB
 
     public static function checkUserEmailExists($email) : bool
     {
-        if (! config('ninja.db.multi_db_enabled')) {
-            return User::where(['email' => $email])->get()->count() >= 1 ?? false;
-        } // true >= 1 emails found / false -> == emails found
-        
+        if (! config('ninja.db.multi_db_enabled'))
+            return User::where(['email' => $email])->exists(); // true >= 1 emails found / false -> == emails found
+
         $current_db = config('database.default');
 
         foreach (self::$dbs as $db) {
-            if (User::on($db)->where(['email' => $email])->get()->count() >= 1) { // if user already exists, validation will fail
+            if (User::on($db)->where(['email' => $email])->exists()) { // if user already exists, validation will fail
                 self::setDb($current_db);
                 return true;
             }
@@ -134,7 +133,7 @@ class MultiDB
         if (! config('ninja.db.multi_db_enabled')) {
             return User::where($data)->withTrashed()->first();
         }
-        
+
         $current_db = config('database.default');
 
         foreach (self::$dbs as $db) {
@@ -196,7 +195,8 @@ class MultiDB
 
         //multi-db active
         foreach (self::$dbs as $db) {
-            if (User::on($db)->where('email', $email)->count() >= 1) {
+
+            if (User::on($db)->where('email', $email)->exists()){
                 self::setDb($db);
                 return true;
             }
@@ -212,7 +212,8 @@ class MultiDB
 
         //multi-db active
         foreach (self::$dbs as $db) {
-            if (Document::on($db)->where('hash', $hash)->count() >= 1) {
+
+            if (Document::on($db)->where('hash', $hash)->exists()){
                 self::setDb($db);
                 return true;
             }
@@ -326,7 +327,7 @@ class MultiDB
     public static function randomSubdomainGenerator()
     {
         $current_db = config('database.default');
-              
+
         do {
             $length = 8;
             $string = '';

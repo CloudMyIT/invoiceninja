@@ -160,7 +160,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function setCompany($company)
     {
         $this->company = $company;
-    
+
         return $this;
     }
 

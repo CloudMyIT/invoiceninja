@@ -49,7 +49,7 @@ class StripeConnectController extends BaseController
         if ($company_gateway) {
             $config = $company_gateway->getConfig();
 
-            if (property_exists($config, 'account_id')) {
+            if(property_exists($config, 'account_id') && strlen($config->account_id) > 1)
                 return view('auth.connect.existing');
             }
         }
@@ -126,14 +126,14 @@ class StripeConnectController extends BaseController
 
         return false;
     }
-    
+
 
 
 
     /*********************************
     * Stripe OAuth
     */
-   
+
    //  public function initialize(InitializeStripeConnectRequest $request, string $token)
    // {
 

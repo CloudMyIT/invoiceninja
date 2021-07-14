@@ -69,7 +69,6 @@ class PaymentNotification implements ShouldQueue
             }
         }
 
-
         /*Google Analytics Track Revenue*/
         if (isset($payment->company->google_analytics_key)) {
             $this->trackRevenue($event);

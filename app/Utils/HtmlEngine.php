@@ -172,8 +172,15 @@ class HtmlEngine
             $data['$balance_due'] = ['value' => Number::formatMoney($this->entity->partial, $this->client) ?: '&nbsp;', 'label' => ctrans('texts.balance_due')];
             $data['$balance_due_raw'] = ['value' => $this->entity->partial, 'label' => ctrans('texts.balance_due')];
         } else {
-            $data['$balance_due'] = ['value' => Number::formatMoney($this->entity->balance, $this->client) ?: '&nbsp;', 'label' => ctrans('texts.balance_due')];
-            $data['$balance_due_raw'] = ['value' => $this->entity->balance, 'label' => ctrans('texts.balance_due')];
+
+            if($this->entity->status_id == 1){
+                $data['$balance_due'] = ['value' => Number::formatMoney($this->entity->amount, $this->client) ?: '&nbsp;', 'label' => ctrans('texts.balance_due')];
+                $data['$balance_due_raw'] = ['value' => $this->entity->amount, 'label' => ctrans('texts.balance_due')];
+            }
+            else{
+                $data['$balance_due'] = ['value' => Number::formatMoney($this->entity->balance, $this->client) ?: '&nbsp;', 'label' => ctrans('texts.balance_due')];
+                $data['$balance_due_raw'] = ['value' => $this->entity->balance, 'label' => ctrans('texts.balance_due')];
+            }
         }
 
         $data['$quote.balance_due'] = &$data['$balance_due'];
@@ -283,7 +290,7 @@ class HtmlEngine
 
         $data['$contact.full_name'] = ['value' => $this->contact->present()->name(), 'label' => ctrans('texts.name')];
         $data['$contact'] = &$data['$contact.full_name'];
-        
+
         $data['$contact.email'] = ['value' => $this->contact->email, 'label' => ctrans('texts.email')];
         $data['$contact.phone'] = ['value' => $this->contact->phone, 'label' => ctrans('texts.phone')];
 

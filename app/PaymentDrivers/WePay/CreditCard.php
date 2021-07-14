@@ -33,7 +33,7 @@ class CreditCard
     public function authorizeView($data)
     {
         $data['gateway'] = $this->wepay_payment_driver;
-        
+
         return render('gateways.wepay.authorize.authorize', $data);
     }
 
@@ -42,7 +42,7 @@ class CreditCard
         //https://developer.wepay.com/api/api-calls/credit_card#authorize
         $data = $request->all();
         // authorize the credit card
-        
+
         nlog($data);
         /*
           '_token' => '1Fk5CRj34up5ntKPvrFyMIAJhDdUNF3boqT3iIN3',
@@ -63,15 +63,15 @@ class CreditCard
 
         // display the response
         // nlog($response);
-        
+
         if (in_array($response->state, ['new', 'authorized'])) {
             $this->storePaymentMethod($response, GatewayType::CREDIT_CARD);
 
             return redirect()->route('client.payment_methods.index');
         }
-    
+
         throw new PaymentFailed("There was a problem adding this payment method.", 400);
-        
+
         /*
             [credit_card_id] => 348084962473
             [credit_card_name] => Visa xxxxxx4018
@@ -108,8 +108,7 @@ class CreditCard
         if ($request->has('credit_card_id') && $request->input('credit_card_id')) {
             nlog("authorize the card first!");
 
-            $response = $this->wepay_payment_driver->wepay->request('credit_card/authorize', [
-                // 'callback_uri'        => route('payment_webhook', ['company_key' => $this->wepay_payment_driver->company_gateway->company->company_key, 'company_gateway_id' => $this->wepay_payment_driver->company_gateway->hashed_id]),
+            $response = $this->wepay_payment_driver->wepay->request('credit_card/authorize', array(
                 'client_id'          => config('ninja.wepay.client_id'),
                 'client_secret'      => config('ninja.wepay.client_secret'),
                 'credit_card_id'     => (int)$request->input('credit_card_id'),
