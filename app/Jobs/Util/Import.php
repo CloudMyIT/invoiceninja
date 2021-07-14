@@ -193,6 +193,8 @@ class Import implements ShouldQueue
 
         nlog("Starting Migration");
         nlog($this->user->email);
+        info("Starting Migration");
+        info($this->user->email);
         
         auth()->login($this->user, false);
         auth()->user()->setCompany($this->company);
@@ -1240,7 +1242,8 @@ class Import implements ShouldQueue
 
                 $try_quote = false;
                 $exception = false;
-
+                $entity = false;
+                
                 try{
                     $invoice_id = $this->transformId('invoices', $resource['invoice_id']);
                     $entity = Invoice::where('id', $invoice_id)->withTrashed()->first();
